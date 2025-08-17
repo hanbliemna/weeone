@@ -65,7 +65,7 @@ const Contact = () => {
       title: "Phone Support",
       value: "+216 00 000 000",
       description: "Speak directly with our support team",
-      response: "Mon-Fri 9AM-6PM EST",
+      response: "Mon-Fri 9AM-5PM CET",
       color: "text-secondary"
     },
     {
@@ -153,30 +153,6 @@ const Contact = () => {
             Have questions about cultural exchange? Need technical support? Want to share feedback? 
             Our global team is ready to assist you in building bridges across cultures.
           </p>
-        </div>
-      </section>
-
-      {/* Contact Methods */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
-            {contactMethods.map((method, index) => (
-              <Card key={index} className="cultural-card group">
-                <CardContent className="p-6 text-center">
-                  <div className="mb-4">
-                    <method.icon className={`h-10 w-10 mx-auto ${method.color} group-hover:animate-cultural-bounce`} />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">{method.title}</h3>
-                  <p className="text-foreground font-semibold mb-2">{method.value}</p>
-                  <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
-                  <Badge variant="outline" className="text-xs">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {method.response}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -294,6 +270,30 @@ const Contact = () => {
         </div>
       </section>
 
+      {/* Contact Methods */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
+            {contactMethods.map((method, index) => (
+              <Card key={index} className="cultural-card group">
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4">
+                    <method.icon className={`h-10 w-10 mx-auto ${method.color} group-hover:animate-cultural-bounce`} />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">{method.title}</h3>
+                  <p className="text-foreground font-semibold mb-2">{method.value}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{method.description}</p>
+                  <Badge variant="outline" className="text-xs">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {method.response}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Support Categories */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
@@ -368,79 +368,6 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Office Information */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold font-display text-foreground mb-6">
-                Global Headquarters
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Our main office where the magic happens
-              </p>
-            </div>
-
-            <Card className="cultural-card">
-              <CardContent className="p-8">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div className="space-y-6">
-                    <div className="flex items-start space-x-4">
-                      <MapPin className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
-                      <div>
-                        <h3 className="font-bold text-foreground mb-1">Address</h3>
-                        <p className="text-muted-foreground">
-                          Winwin Coworking Space<br />
-                          Menzah 5<br />
-                          Ariana Governorate<br />
-                          Tunisia
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start space-x-4">
-                      <Clock className="h-6 w-6 text-secondary mt-1 flex-shrink-0" />
-                      <div>
-                        <h3 className="font-bold text-foreground mb-1">Office Hours</h3>
-                        <p className="text-muted-foreground">
-                          Monday - Friday: 9:00 AM - 6:00 PM PST<br />
-                          Saturday: 10:00 AM - 4:00 PM PST<br />
-                          Sunday: Closed
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-4">
-                      <Globe className="h-6 w-6 text-accent mt-1 flex-shrink-0" />
-                      <div>
-                        <h3 className="font-bold text-foreground mb-1">Global Support</h3>
-                        <p className="text-muted-foreground">
-                          Our team provides 24/7 support across all time zones.<br />
-                          We speak 12+ languages to serve our global community.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-muted rounded-xl p-6 text-center">
-                    <div className="mb-4">
-                      <Building2 className="h-12 w-12 mx-auto text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Visit Us</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Want to visit our office? We'd love to meet you! 
-                      Please schedule an appointment in advance.
-                    </p>
-                    <Button variant="outline" size="sm">
-                      Schedule Visit
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
 
       {/* Emergency Contact */}
       <section className="py-16 px-4 bg-gradient-cultural">
