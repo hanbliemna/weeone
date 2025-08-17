@@ -112,15 +112,20 @@ const Index = () => {
 
         {/* Hero Content */}
         <div className={`relative z-20 max-w-4xl mx-auto px-4 text-center text-white transition-all duration-1000 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
-          <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Cultures United Platform
-          </Badge>
+          {/* Project Name and Tagline */}
+          <div className="absolute top-0 left-0 text-left">
+            <h1 className="text-6xl md:text-8xl font-bold font-display mb-2 text-white">
+              WeeOne
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 font-medium">
+              Cultures United
+            </p>
+          </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold font-display mb-6 leading-tight">
+          <h2 className="text-5xl md:text-7xl font-bold font-display mb-6 leading-tight mt-32">
             Connect Beyond
             <span className="bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent"> Borders</span>
-          </h1>
+          </h2>
           
           <p className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed max-w-3xl mx-auto">
             Join millions of young adults breaking cultural barriers through authentic stories, 
