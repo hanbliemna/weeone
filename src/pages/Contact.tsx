@@ -63,7 +63,7 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Phone Support",
-      value: "+1 (555) 123-4567",
+      value: "+216 00 000 000",
       description: "Speak directly with our support team",
       response: "Mon-Fri 9AM-6PM EST",
       color: "text-secondary"
