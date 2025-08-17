@@ -390,10 +390,10 @@ const Contact = () => {
                       <div>
                         <h3 className="font-bold text-foreground mb-1">Address</h3>
                         <p className="text-muted-foreground">
-                          123 Cultural Bridge Avenue<br />
-                          International District<br />
-                          San Francisco, CA 94105<br />
-                          United States
+                          Winwin Coworking Space<br />
+                          Menzah 5<br />
+                          Ariana Governorate<br />
+                          Tunisia
                         </p>
                       </div>
                     </div>
