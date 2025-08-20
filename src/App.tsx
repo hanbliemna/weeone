@@ -8,6 +8,10 @@ import Story from "./pages/Story";
 import Community from "./pages/Community";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
+import Register from "./pages/Register";
+import RegisterForm from "./pages/RegisterForm";
+import VerifyPhone from "./pages/VerifyPhone";
+import ProfileSetup from "./pages/ProfileSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +28,10 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/register/form" element={<RegisterForm />} />
+          <Route path="/register/verify" element={<VerifyPhone />} />
+          <Route path="/register/profile-setup" element={<ProfileSetup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
