@@ -86,7 +86,7 @@ const Register = () => {
                 onMouseEnter={() => setIsAnimated(true)}
                 onMouseLeave={() => setIsAnimated(false)}
               >
-                Start Registration
+                Join WeeOne
                 <ArrowRight className={`ml-2 h-5 w-5 transition-transform duration-300 ${isAnimated ? 'translate-x-1' : ''}`} />
               </Button>
               
