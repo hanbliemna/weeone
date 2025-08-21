@@ -75,7 +75,7 @@ const Header = () => {
           <Button variant="outline" size="sm" className="border-primary/20 hover:bg-primary/5">
             Sign In
           </Button>
-          <Button size="sm" className="cta-button" onClick={() => window.location.href = '/register'}>
+          <Button size="sm" className="cta-button" onClick={() => window.location.href = '/register/form'}>
             Join Now
           </Button>
         </div>
@@ -122,7 +122,7 @@ const Header = () => {
                 <Button variant="outline" className="border-primary/20 hover:bg-primary/5">
                   Sign In
                 </Button>
-                <Button className="cta-button" onClick={() => window.location.href = '/register'}>
+                <Button className="cta-button" onClick={() => window.location.href = '/register/form'}>
                   Join WeeOne Community
                 </Button>
               </div>
