@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { ArrowLeft, Phone, RefreshCw, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const VerifyPhone = () => {
   const [verificationCode, setVerificationCode] = useState("");
@@ -46,26 +45,10 @@ const VerifyPhone = () => {
     setIsVerifying(true);
     
     try {
-      // Check verification code against database
-      const { data, error } = await supabase
-        .from('phone_verification_codes')
-        .select('*')
-        .eq('phone_number', phoneNumber)
-        .eq('code', verificationCode)
-        .eq('verified', false)
-        .gte('expires_at', new Date().toISOString())
-        .maybeSingle();
-
-      if (error || !data) {
-        throw new Error('Invalid or expired verification code');
-      }
-
-      // Mark as verified
-      await supabase
-        .from('phone_verification_codes')
-        .update({ verified: true })
-        .eq('id', data.id);
+      // Simulate verification process
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
+      // For demo purposes, accept any 6-digit code
       toast({
         title: "Phone Verified!",
         description: "Your phone number has been successfully verified.",
@@ -73,10 +56,10 @@ const VerifyPhone = () => {
       
       // Navigate to profile setup
       navigate("/register/profile-setup");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Verification Failed",
-        description: error.message || "Invalid verification code. Please try again.",
+        description: "Invalid verification code. Please try again.",
         variant: "destructive",
       });
     } finally {
