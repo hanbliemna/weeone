@@ -11,18 +11,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, ArrowRight, Upload, User, Globe, BookOpen, Heart, Camera, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, User, Globe, BookOpen, Heart, Camera, Check, Crown, Trophy, CheckCircle } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import LeagueBoard from "@/components/LeagueBoard";
+import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters"),
   profilePhoto: z.string().optional(),
-  languages: z.array(z.string()).min(1, "Please select at least one language"),
-  interests: z.array(z.string()).min(1, "Please select at least one interest"),
-  culturalPreferences: z.array(z.string()).min(1, "Please select at least one cultural preference"),
-  culturalBackground: z.string().min(1, "Please describe your cultural background"),
-  biography: z.string().min(10, "Biography must be at least 10 characters").max(500, "Biography must be less than 500 characters"),
+  bio: z.string().min(10, "Bio must be at least 10 characters").max(500, "Bio must be less than 500 characters"),
+  age: z.number().min(13, "Must be at least 13 years old").max(120, "Please enter a valid age"),
+  gender: z.string().min(1, "Please select your gender"),
+  nationality: z.string().min(1, "Please select your nationality"),
+  languagesSpoken: z.array(z.string()).min(1, "Please select at least one language"),
+  culturePreferences: z.array(z.string()).min(1, "Please select at least one cultural preference"),
+  quizScore: z.number().min(0).max(100),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -55,17 +61,22 @@ const ProfileSetup = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: "",
       username: "",
       profilePhoto: "",
-      languages: [],
-      interests: [],
-      culturalPreferences: [],
-      culturalBackground: "",
-      biography: "",
+      bio: "",
+      age: 18,
+      gender: "",
+      nationality: "",
+      languagesSpoken: [],
+      culturePreferences: [],
+      quizScore: 75,
     },
   });
 
-  const totalSteps = 3;
+  const watchedValues = form.watch();
+
+  const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,28 +93,56 @@ const ProfileSetup = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-      return;
-    }
-
     setIsSubmitting(true);
     
     try {
-      // Simulate profile setup process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("No user found");
+      }
+
+      // Insert profile data into Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            user_id: user.id,
+            full_name: data.fullName,
+            username: data.username,
+            bio: data.bio,
+            age: data.age,
+            gender: data.gender,
+            nationality: data.nationality,
+            country_of_residence: data.nationality, // Use nationality for country_of_residence
+            phone_number: '', // Empty for now since we collect it in RegisterForm
+            languages_spoken: data.languagesSpoken,
+            culture_preferences: data.culturePreferences,
+            quiz_score: data.quizScore,
+            profile_photo_url: data.profilePhoto,
+            user_type: 'visitor',
+            total_points: 0,
+            countries_unlocked: [],
+            badges_collected: ['New Member']
+          }
+        ]);
+
+      if (error) {
+        throw error;
+      }
       
       toast({
-        title: "Profile Setup Complete!",
-        description: "Welcome to the WeeOne community! Let's start connecting.",
+        title: "Profile Created!",
+        description: "Welcome to WeeOne! Your cultural journey begins now.",
       });
       
-      // Navigate to dashboard or welcome page
-      navigate("/");
-    } catch (error) {
+      // Navigate to main feed
+      navigate("/feed");
+    } catch (error: any) {
       toast({
         title: "Setup Failed",
-        description: "Please try again. If the problem persists, contact support.",
+        description: error.message || "Please try again. If the problem persists, contact support.",
         variant: "destructive",
       });
     } finally {
@@ -126,15 +165,30 @@ const ProfileSetup = () => {
     const values = form.getValues();
     
     if (currentStep === 1) {
-      return values.username && values.username.length >= 3;
+      return values.fullName && values.username && values.username.length >= 3;
     } else if (currentStep === 2) {
-      return values.languages.length > 0 && values.interests.length > 0;
+      return values.bio && values.bio.length >= 10 && values.age >= 13 && values.gender && values.nationality;
     } else if (currentStep === 3) {
-      return values.culturalPreferences.length > 0 && values.culturalBackground && values.biography && values.biography.length >= 10;
+      return values.languagesSpoken.length > 0 && values.culturePreferences.length > 0;
+    } else if (currentStep === 4) {
+      return true; // Review step, no additional validation needed
     }
     
     return false;
   };
+
+  const countries = [
+    "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria", "Bangladesh", "Belgium", 
+    "Brazil", "Bulgaria", "Canada", "Chile", "China", "Colombia", "Croatia", "Czech Republic", 
+    "Denmark", "Ecuador", "Egypt", "Finland", "France", "Germany", "Ghana", "Greece", "Hungary", 
+    "India", "Indonesia", "Iran", "Iraq", "Ireland", "Italy", "Japan", "Jordan", "Kenya", 
+    "South Korea", "Lebanon", "Malaysia", "Mexico", "Morocco", "Netherlands", "Nigeria", "Norway", 
+    "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", 
+    "South Africa", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine", "United Kingdom", 
+    "United States", "Venezuela", "Vietnam"
+  ].filter(country => country !== "Israel");
+
+  const genders = ["Male", "Female", "Non-binary", "Prefer not to say"];
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -143,8 +197,8 @@ const ProfileSetup = () => {
           <div className="space-y-6">
             <div className="text-center mb-6">
               <User className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold">Create Your Profile</h3>
-              <p className="text-sm text-muted-foreground">Let others know who you are</p>
+              <h3 className="text-xl font-semibold text-primary">Basic Information</h3>
+              <p className="text-sm text-muted-foreground">Let's start with the basics</p>
             </div>
 
             {/* Profile Photo Upload */}
@@ -159,7 +213,7 @@ const ProfileSetup = () => {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <label className="absolute -bottom-2 -right-2 p-2 bg-primary rounded-full cursor-pointer hover:bg-primary-light transition-colors">
+                <label className="absolute -bottom-2 -right-2 p-2 bg-primary rounded-full cursor-pointer hover:bg-primary/80 transition-colors">
                   <Upload className="h-4 w-4 text-white" />
                   <input
                     type="file"
@@ -169,8 +223,22 @@ const ProfileSetup = () => {
                   />
                 </label>
               </div>
-              <p className="text-sm text-muted-foreground">Upload a profile photo (optional)</p>
+              <p className="text-sm text-muted-foreground">Upload a profile photo</p>
             </div>
+
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your full name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -182,7 +250,6 @@ const ProfileSetup = () => {
                     <Input 
                       placeholder="Choose a unique username" 
                       {...field}
-                      className="text-center"
                     />
                   </FormControl>
                   <FormDescription>
@@ -199,18 +266,122 @@ const ProfileSetup = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Globe className="h-12 w-12 text-secondary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold">Languages & Interests</h3>
-              <p className="text-sm text-muted-foreground">Share what you're passionate about</p>
+              <Heart className="h-12 w-12 text-secondary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-secondary">Personal Details</h3>
+              <p className="text-sm text-muted-foreground">Tell us more about yourself</p>
             </div>
 
             <FormField
               control={form.control}
-              name="languages"
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Short Bio</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Write a brief introduction about yourself and your cultural interests..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {field.value.length}/500 characters
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Age</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="13" 
+                        max="120"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {genders.map((gender) => (
+                          <SelectItem key={gender} value={gender}>
+                            {gender}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="nationality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nationality</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your nationality" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-48">
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <Globe className="h-12 w-12 text-accent mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-accent">Cultural Interests</h3>
+              <p className="text-sm text-muted-foreground">Share your cultural preferences</p>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="languagesSpoken"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Languages You Speak</FormLabel>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
+                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
                     {languages.map((language) => (
                       <div key={language} className="flex items-center space-x-2">
                         <Checkbox
@@ -239,55 +410,11 @@ const ProfileSetup = () => {
 
             <FormField
               control={form.control}
-              name="interests"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Interests & Hobbies</FormLabel>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-                    {interests.map((interest) => (
-                      <div key={interest} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`interest-${interest}`}
-                          checked={field.value.includes(interest)}
-                          onCheckedChange={(checked) => {
-                            const updatedInterests = checked
-                              ? [...field.value, interest]
-                              : field.value.filter((i) => i !== interest);
-                            field.onChange(updatedInterests);
-                          }}
-                        />
-                        <label
-                          htmlFor={`interest-${interest}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          {interest}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <Heart className="h-12 w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-semibold">Cultural Profile</h3>
-              <p className="text-sm text-muted-foreground">Tell us about your cultural journey</p>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="culturalPreferences"
+              name="culturePreferences"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cultural Preferences</FormLabel>
-                  <div className="grid grid-cols-1 gap-3 max-h-48 overflow-y-auto">
+                  <div className="grid grid-cols-1 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
                     {culturalPreferences.map((preference) => (
                       <div key={preference} className="flex items-center space-x-2">
                         <Checkbox
@@ -314,44 +441,108 @@ const ProfileSetup = () => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="culturalBackground"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cultural Background</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Tell us about your cultural heritage, traditions, and what makes you unique..."
-                      className="min-h-[80px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="bg-muted/50 rounded-lg p-4">
+              <FormField
+                control={form.control}
+                name="quizScore"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-accent" />
+                      Welcome Culture Quiz Score
+                    </FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="0" 
+                        max="100"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter your score from the cultural awareness quiz (0-100%)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        );
 
-            <FormField
-              control={form.control}
-              name="biography"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Biography</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Write a brief introduction about yourself, your interests, and what you hope to share with the WeeOne community..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {field.value.length}/500 characters
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <Trophy className="h-16 w-16 text-accent mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">Your WeeOne Profile</h3>
+              <p className="text-muted-foreground">
+                Review your profile and explore your league board
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Profile Summary */}
+              <div className="bg-muted/50 rounded-lg p-6 space-y-4">
+                <h4 className="font-semibold text-foreground flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Profile Summary
+                </h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Name:</span>
+                    <span className="font-medium">{watchedValues.fullName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Username:</span>
+                    <span className="font-medium">@{watchedValues.username}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Age:</span>
+                    <span className="font-medium">{watchedValues.age}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Quiz Score:</span>
+                    <span className="font-medium text-accent">{watchedValues.quizScore}%</span>
+                  </div>
+                </div>
+                
+                {watchedValues.bio && (
+                  <div>
+                    <span className="text-muted-foreground text-sm">Bio:</span>
+                    <p className="text-sm mt-1 bg-background rounded p-2">{watchedValues.bio}</p>
+                  </div>
+                )}
+                
+                {watchedValues.languagesSpoken.length > 0 && (
+                  <div>
+                    <span className="text-muted-foreground text-sm">Languages:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {watchedValues.languagesSpoken.map((lang, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {lang}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* League Board Preview */}
+              <div>
+                <h4 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                  <Trophy className="h-4 w-4" />
+                  Your League Board
+                </h4>
+                <LeagueBoard
+                  totalPoints={0}
+                  quizScore={watchedValues.quizScore}
+                  countriesUnlocked={[]}
+                  badgesCollected={["New Member"]}
+                />
+              </div>
+            </div>
           </div>
         );
 
@@ -392,13 +583,23 @@ const ProfileSetup = () => {
         </div>
 
         {/* Form Card */}
-        <div className="max-w-lg mx-auto">
-          <Card className="cultural-card border-primary/20 shadow-cultural">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Complete Your Profile</CardTitle>
-              <CardDescription>
-                Help others discover and connect with you
+        <div className="max-w-2xl mx-auto">
+          <Card className="cultural-card border-primary/30 shadow-cultural bg-gradient-card">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-3xl font-display bg-gradient-cultural bg-clip-text text-transparent">
+                Create Your Cultural Profile
+              </CardTitle>
+              <CardDescription className="text-base mt-2 text-muted-foreground">
+                Tell us about yourself and start your journey in the WeeOne community
               </CardDescription>
+              
+              {/* User Status Badge */}
+              <div className="flex justify-center mt-4">
+                <Badge className="bg-secondary/10 text-secondary border-secondary/20 px-4 py-2">
+                  <User className="h-4 w-4 mr-2" />
+                  Visitor Status
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent>
               <Form {...form}>

@@ -128,10 +128,12 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 rounded-full font-semibold shadow-glow">
-              Start as Visitor - Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/register">
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 rounded-full font-semibold shadow-glow">
+                Start as Visitor - Free
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button 
               size="lg" 
               variant="outline" 
