@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import RegisterForm from "./pages/RegisterForm";
 import VerifyPhone from "./pages/VerifyPhone";
 import ProfileSetup from "./pages/ProfileSetup";
+import MainFeed from "./pages/MainFeed";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/register/form" element={<RegisterForm />} />
           <Route path="/register/verify" element={<VerifyPhone />} />
           <Route path="/register/profile-setup" element={<ProfileSetup />} />
+          <Route path="/feed" element={<MainFeed />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
