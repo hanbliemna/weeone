@@ -11,24 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, ArrowRight, Upload, User, Globe, BookOpen, Heart, Camera, Check, Crown, Trophy, CheckCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, User, Globe, BookOpen, Heart, Camera, Crown, Flag } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import LeagueBoard from "@/components/LeagueBoard";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
   username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters"),
   profilePhoto: z.string().optional(),
-  bio: z.string().min(10, "Bio must be at least 10 characters").max(500, "Bio must be less than 500 characters"),
-  age: z.number().min(13, "Must be at least 13 years old").max(120, "Please enter a valid age"),
   gender: z.string().min(1, "Please select your gender"),
+  dateOfBirth: z.string().min(1, "Please select your date of birth"),
   nationality: z.string().min(1, "Please select your nationality"),
+  countryOfResidence: z.string().min(1, "Please select your country of residence"),
   languagesSpoken: z.array(z.string()).min(1, "Please select at least one language"),
-  culturePreferences: z.array(z.string()).min(1, "Please select at least one cultural preference"),
-  quizScore: z.number().min(0).max(100),
+  culturalPreferences: z.array(z.string()).min(1, "Please select at least one cultural preference"),
+  topicsOfInterest: z.array(z.string()).min(1, "Please select at least one topic of interest"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -55,26 +53,24 @@ const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [accountType, setAccountType] = useState<'visitor' | 'global_citizen'>('visitor');
   const navigate = useNavigate();
   const { toast } = useToast();
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
       username: "",
       profilePhoto: "",
-      bio: "",
-      age: 18,
       gender: "",
+      dateOfBirth: "",
       nationality: "",
+      countryOfResidence: "",
       languagesSpoken: [],
-      culturePreferences: [],
-      quizScore: 75,
+      culturalPreferences: [],
+      topicsOfInterest: [],
     },
   });
-
-  const watchedValues = form.watch();
 
   const totalSteps = 4;
   const progress = (currentStep / totalSteps) * 100;
@@ -82,6 +78,15 @@ const ProfileSetup = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
@@ -100,7 +105,16 @@ const ProfileSetup = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        throw new Error("No user found");
+        throw new Error("No user found. Please log in again.");
+      }
+
+      // Calculate age from date of birth
+      const birthDate = new Date(data.dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      
+      if (age < 13) {
+        throw new Error("You must be at least 13 years old to create an account.");
       }
 
       // Insert profile data into Supabase
@@ -109,22 +123,16 @@ const ProfileSetup = () => {
         .insert([
           {
             user_id: user.id,
-            full_name: data.fullName,
             username: data.username,
-            bio: data.bio,
-            age: data.age,
+            profile_photo: data.profilePhoto || null,
             gender: data.gender,
+            date_of_birth: data.dateOfBirth,
             nationality: data.nationality,
-            country_of_residence: data.nationality, // Use nationality for country_of_residence
-            phone_number: '', // Empty for now since we collect it in RegisterForm
+            country_of_residence: data.countryOfResidence,
             languages_spoken: data.languagesSpoken,
-            culture_preferences: data.culturePreferences,
-            quiz_score: data.quizScore,
-            profile_photo_url: data.profilePhoto,
-            user_type: 'visitor',
-            total_points: 0,
-            countries_unlocked: [],
-            badges_collected: ['New Member']
+            cultural_preferences: data.culturalPreferences,
+            topics_of_interest: data.topicsOfInterest,
+            account_type: accountType,
           }
         ]);
 
@@ -133,15 +141,15 @@ const ProfileSetup = () => {
       }
       
       toast({
-        title: "Profile Created!",
-        description: "Welcome to WeeOne! Your cultural journey begins now.",
+        title: "Profile Created Successfully!",
+        description: `Welcome to WeeOne, ${data.username}! Your cultural journey begins now.`,
       });
       
       // Navigate to main feed
       navigate("/feed");
     } catch (error: any) {
       toast({
-        title: "Setup Failed",
+        title: "Profile Setup Failed",
         description: error.message || "Please try again. If the problem persists, contact support.",
         variant: "destructive",
       });
@@ -165,11 +173,11 @@ const ProfileSetup = () => {
     const values = form.getValues();
     
     if (currentStep === 1) {
-      return values.fullName && values.username && values.username.length >= 3;
+      return values.username && values.username.length >= 3;
     } else if (currentStep === 2) {
-      return values.bio && values.bio.length >= 10 && values.age >= 13 && values.gender && values.nationality;
+      return values.gender && values.dateOfBirth && values.nationality && values.countryOfResidence;
     } else if (currentStep === 3) {
-      return values.languagesSpoken.length > 0 && values.culturePreferences.length > 0;
+      return values.languagesSpoken.length > 0 && values.culturalPreferences.length > 0 && values.topicsOfInterest.length > 0;
     } else if (currentStep === 4) {
       return true; // Review step, no additional validation needed
     }
@@ -186,7 +194,7 @@ const ProfileSetup = () => {
     "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", 
     "South Africa", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine", "United Kingdom", 
     "United States", "Venezuela", "Vietnam"
-  ].filter(country => country !== "Israel");
+  ];
 
   const genders = ["Male", "Female", "Non-binary", "Prefer not to say"];
 
@@ -197,8 +205,8 @@ const ProfileSetup = () => {
           <div className="space-y-6">
             <div className="text-center mb-6">
               <User className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-primary">Basic Information</h3>
-              <p className="text-sm text-muted-foreground">Let's start with the basics</p>
+              <h3 className="text-xl font-semibold text-primary">Profile Information</h3>
+              <p className="text-sm text-muted-foreground">Create your unique WeeOne identity</p>
             </div>
 
             {/* Profile Photo Upload */}
@@ -217,28 +225,14 @@ const ProfileSetup = () => {
                   <Upload className="h-4 w-4 text-white" />
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={handleImageUpload}
                     className="hidden"
                   />
                 </label>
               </div>
-              <p className="text-sm text-muted-foreground">Upload a profile photo</p>
+              <p className="text-sm text-muted-foreground">Upload a profile photo (max 5MB, JPG/PNG/WEBP)</p>
             </div>
-
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -253,7 +247,7 @@ const ProfileSetup = () => {
                     />
                   </FormControl>
                   <FormDescription>
-                    This is how others will find you on WeeOne
+                    3-20 characters, alphanumeric and underscore only
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -271,48 +265,7 @@ const ProfileSetup = () => {
               <p className="text-sm text-muted-foreground">Tell us more about yourself</p>
             </div>
 
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Bio</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Write a brief introduction about yourself and your cultural interests..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {field.value.length}/500 characters
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Age</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        min="13" 
-                        max="120"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="gender"
@@ -337,6 +290,24 @@ const ProfileSetup = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date" 
+                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField
@@ -349,6 +320,31 @@ const ProfileSetup = () => {
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your nationality" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-48">
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="countryOfResidence"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country of Residence</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your country of residence" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-48">
@@ -410,7 +406,7 @@ const ProfileSetup = () => {
 
             <FormField
               control={form.control}
-              name="culturePreferences"
+              name="culturalPreferences"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cultural Preferences</FormLabel>
@@ -441,106 +437,107 @@ const ProfileSetup = () => {
               )}
             />
 
-            <div className="bg-muted/50 rounded-lg p-4">
-              <FormField
-                control={form.control}
-                name="quizScore"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <Trophy className="h-4 w-4 text-accent" />
-                      Welcome Culture Quiz Score
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max="100"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Enter your score from the cultural awareness quiz (0-100%)
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="topicsOfInterest"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Topics of Interest</FormLabel>
+                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
+                    {interests.map((interest) => (
+                      <div key={interest} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`interest-${interest}`}
+                          checked={field.value.includes(interest)}
+                          onCheckedChange={(checked) => {
+                            const updatedInterests = checked
+                              ? [...field.value, interest]
+                              : field.value.filter((i) => i !== interest);
+                            field.onChange(updatedInterests);
+                          }}
+                        />
+                        <label
+                          htmlFor={`interest-${interest}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {interest}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         );
 
       case 4:
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <Trophy className="h-16 w-16 text-accent mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground mb-2">Your WeeOne Profile</h3>
-              <p className="text-muted-foreground">
-                Review your profile and explore your league board
-              </p>
+            <div className="text-center mb-6">
+              <Flag className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-primary">Account Type & Review</h3>
+              <p className="text-sm text-muted-foreground">Choose your account type and review your profile</p>
             </div>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Profile Summary */}
-              <div className="bg-muted/50 rounded-lg p-6 space-y-4">
-                <h4 className="font-semibold text-foreground flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Profile Summary
-                </h4>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Name:</span>
-                    <span className="font-medium">{watchedValues.fullName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Username:</span>
-                    <span className="font-medium">@{watchedValues.username}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Age:</span>
-                    <span className="font-medium">{watchedValues.age}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Quiz Score:</span>
-                    <span className="font-medium text-accent">{watchedValues.quizScore}%</span>
+
+            {/* Account Type Selection */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-sm">Account Type</h4>
+              <div className="grid grid-cols-1 gap-4">
+                <div 
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                    accountType === 'visitor' 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setAccountType('visitor')}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">Visitor</h5>
+                      <p className="text-sm text-muted-foreground">Start your cultural journey</p>
+                    </div>
                   </div>
                 </div>
                 
-                {watchedValues.bio && (
-                  <div>
-                    <span className="text-muted-foreground text-sm">Bio:</span>
-                    <p className="text-sm mt-1 bg-background rounded p-2">{watchedValues.bio}</p>
-                  </div>
-                )}
-                
-                {watchedValues.languagesSpoken.length > 0 && (
-                  <div>
-                    <span className="text-muted-foreground text-sm">Languages:</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {watchedValues.languagesSpoken.map((lang, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {lang}
-                        </Badge>
-                      ))}
+                <div 
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                    accountType === 'global_citizen' 
+                      ? 'border-accent bg-accent/5' 
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                  onClick={() => setAccountType('global_citizen')}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+                      <Crown className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold">Global Citizen</h5>
+                      <p className="text-sm text-muted-foreground">Unlock exclusive features and connect deeper</p>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
+            </div>
 
-              {/* League Board Preview */}
-              <div>
-                <h4 className="font-semibold text-foreground flex items-center gap-2 mb-4">
-                  <Trophy className="h-4 w-4" />
-                  Your League Board
-                </h4>
-                <LeagueBoard
-                  totalPoints={0}
-                  quizScore={watchedValues.quizScore}
-                  countriesUnlocked={[]}
-                  badgesCollected={["New Member"]}
-                />
+            {/* Profile Summary */}
+            <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+              <h4 className="font-semibold text-sm">Profile Summary</h4>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Username:</span> {form.watch("username")}</p>
+                <p><span className="font-medium">Gender:</span> {form.watch("gender")}</p>
+                <p><span className="font-medium">Nationality:</span> {form.watch("nationality")}</p>
+                <p><span className="font-medium">Languages:</span> {form.watch("languagesSpoken").join(", ")}</p>
+                <p><span className="font-medium">Account Type:</span> 
+                  <Badge variant="outline" className="ml-2">
+                    {accountType === 'visitor' ? 'Visitor' : 'Global Citizen'}
+                  </Badge>
+                </p>
               </div>
             </div>
           </div>
@@ -552,82 +549,53 @@ const ProfileSetup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-community">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/register/verify")}
-            className="text-muted-foreground hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          
-          <div className="text-center">
-            <h1 className="text-2xl font-bold font-display text-primary">WeeOne</h1>
-            <p className="text-sm text-muted-foreground">Cultures United</p>
-          </div>
-          
-          <div className="w-20"></div> {/* Spacer */}
-        </div>
-
-        {/* Progress Bar */}
-        <div className="max-w-lg mx-auto mb-8">
-          <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>Step {currentStep} of {totalSteps}</span>
-            <span>Profile Setup</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
-
-        {/* Form Card */}
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
-          <Card className="cultural-card border-primary/30 shadow-cultural bg-gradient-card">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-3xl font-display bg-gradient-cultural bg-clip-text text-transparent">
-                Create Your Cultural Profile
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-primary">Profile Setup</span>
+              <span className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          <Card className="cultural-card border-primary/30 shadow-cultural">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-display text-primary">
+                Complete Your Profile
               </CardTitle>
-              <CardDescription className="text-base mt-2 text-muted-foreground">
-                Tell us about yourself and start your journey in the WeeOne community
+              <CardDescription className="text-base">
+                Help us create the perfect cultural experience for you
               </CardDescription>
-              
-              {/* User Status Badge */}
-              <div className="flex justify-center mt-4">
-                <Badge className="bg-secondary/10 text-secondary border-secondary/20 px-4 py-2">
-                  <User className="h-4 w-4 mr-2" />
-                  Visitor Status
-                </Badge>
-              </div>
             </CardHeader>
+            
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {renderStepContent()}
 
                   {/* Navigation Buttons */}
-                  <div className="flex justify-between pt-6">
+                  <div className="flex justify-between pt-6 border-t border-border/50">
                     {currentStep > 1 && (
                       <Button
                         type="button"
                         variant="outline"
                         onClick={prevStep}
-                        className="border-primary/20"
+                        className="flex items-center"
                       >
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Previous
                       </Button>
                     )}
                     
-                    <div className="flex-1"></div>
-
                     {currentStep < totalSteps ? (
                       <Button
                         type="button"
                         onClick={nextStep}
-                        className="bg-gradient-cultural hover:shadow-glow"
                         disabled={!validateCurrentStep()}
+                        className="ml-auto flex items-center bg-gradient-cultural hover:shadow-glow"
                       >
                         Next
                         <ArrowRight className="h-4 w-4 ml-2" />
@@ -636,19 +604,10 @@ const ProfileSetup = () => {
                       <Button
                         type="submit"
                         disabled={isSubmitting || !validateCurrentStep()}
-                        className="bg-gradient-cultural hover:shadow-glow"
+                        className="ml-auto flex items-center bg-gradient-cultural hover:shadow-glow"
                       >
-                        {isSubmitting ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Setting Up Profile...
-                          </>
-                        ) : (
-                          <>
-                            <Check className="h-4 w-4 mr-2" />
-                            Complete Setup
-                          </>
-                        )}
+                        {isSubmitting ? "Creating Profile..." : "Complete Profile"}
+                        {!isSubmitting && <ArrowRight className="h-4 w-4 ml-2" />}
                       </Button>
                     )}
                   </div>
@@ -657,7 +616,7 @@ const ProfileSetup = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

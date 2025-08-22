@@ -14,117 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      phone_verification_codes: {
-        Row: {
-          code: string
-          created_at: string | null
-          expires_at: string
-          id: string
-          phone_number: string
-          verified: boolean | null
-        }
-        Insert: {
-          code: string
-          created_at?: string | null
-          expires_at: string
-          id?: string
-          phone_number: string
-          verified?: boolean | null
-        }
-        Update: {
-          code?: string
-          created_at?: string | null
-          expires_at?: string
-          id?: string
-          phone_number?: string
-          verified?: boolean | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
-          age: number | null
-          badges_collected: string[] | null
-          bio: string | null
-          countries_unlocked: string[] | null
+          account_type: string | null
           country_of_residence: string
           created_at: string | null
-          culture_preferences: string[] | null
-          full_name: string
-          gender: string
+          cultural_preferences: string[] | null
+          date_of_birth: string
+          gender: string | null
           id: string
           languages_spoken: string[] | null
           nationality: string
-          phone_number: string
-          phone_verified: boolean | null
-          profile_photo_url: string | null
-          quiz_score: number | null
-          total_points: number | null
+          profile_photo: string | null
+          topics_of_interest: string[] | null
           updated_at: string | null
           user_id: string
-          user_type: string | null
-          username: string | null
+          username: string
         }
         Insert: {
-          age?: number | null
-          badges_collected?: string[] | null
-          bio?: string | null
-          countries_unlocked?: string[] | null
+          account_type?: string | null
           country_of_residence: string
           created_at?: string | null
-          culture_preferences?: string[] | null
-          full_name: string
-          gender: string
+          cultural_preferences?: string[] | null
+          date_of_birth: string
+          gender?: string | null
           id?: string
           languages_spoken?: string[] | null
           nationality: string
-          phone_number: string
-          phone_verified?: boolean | null
-          profile_photo_url?: string | null
-          quiz_score?: number | null
-          total_points?: number | null
+          profile_photo?: string | null
+          topics_of_interest?: string[] | null
           updated_at?: string | null
           user_id: string
-          user_type?: string | null
-          username?: string | null
+          username: string
         }
         Update: {
-          age?: number | null
-          badges_collected?: string[] | null
-          bio?: string | null
-          countries_unlocked?: string[] | null
+          account_type?: string | null
           country_of_residence?: string
           created_at?: string | null
-          culture_preferences?: string[] | null
-          full_name?: string
-          gender?: string
+          cultural_preferences?: string[] | null
+          date_of_birth?: string
+          gender?: string | null
           id?: string
           languages_spoken?: string[] | null
           nationality?: string
-          phone_number?: string
-          phone_verified?: boolean | null
-          profile_photo_url?: string | null
-          quiz_score?: number | null
-          total_points?: number | null
+          profile_photo?: string | null
+          topics_of_interest?: string[] | null
           updated_at?: string | null
           user_id?: string
-          user_type?: string | null
-          username?: string | null
-        }
-        Relationships: []
-      }
-      weeone_registration_database: {
-        Row: {
-          created_at: string
-          id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
+          username?: string
         }
         Relationships: []
       }
