@@ -10,7 +10,7 @@ import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import Register from "./pages/Register";
 import RegisterForm from "./pages/RegisterForm";
-
+import EmailVerification from "./pages/EmailVerification";
 import ProfileSetup from "./pages/ProfileSetup";
 import MainFeed from "./pages/MainFeed";
 import NotFound from "./pages/NotFound";
@@ -31,6 +31,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
           <Route path="/register/form" element={<RegisterForm />} />
+          <Route path="/register/email-verification" element={<EmailVerification />} />
           <Route path="/register/profile-setup" element={<ProfileSetup />} />
           <Route path="/feed" element={<MainFeed />} />
           <Route path="*" element={<NotFound />} />

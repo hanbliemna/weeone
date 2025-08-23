@@ -67,8 +67,8 @@ const RegisterForm = () => {
         description: "Please check your email for a verification link.",
       });
       
-      // Navigate to profile setup page
-      navigate("/register/profile-setup");
+      // Navigate to email verification page
+      navigate("/register/email-verification");
     } catch (error: any) {
       toast({
         title: "Registration Failed",

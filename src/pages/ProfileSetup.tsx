@@ -617,6 +617,12 @@ const ProfileSetup = () => {
           </Card>
         </div>
       </main>
+
+      {/* Pricing Modal */}
+      <PricingModal
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+      />
     </div>
   );
 };

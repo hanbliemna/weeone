@@ -27,6 +27,7 @@ import {
   Building2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -42,13 +43,34 @@ const Contact = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent Successfully!",
-      description: "Thank you for contacting WeeOne. We'll get back to you within 24 hours.",
-    });
-    setFormData({ name: "", email: "", subject: "", category: "", message: "" });
+    
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          category: formData.category,
+          message: formData.message
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Thank you for contacting WeeOne. We'll get back to you within 24 hours.",
+      });
+      setFormData({ name: "", email: "", subject: "", category: "", message: "" });
+    } catch (error: any) {
+      toast({
+        title: "Failed to Send Message",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   const contactMethods = [

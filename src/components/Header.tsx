@@ -54,17 +54,6 @@ const Header = () => {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search cultures, people..."
-              className="pl-10 w-60 bg-muted/50 border-border/50 focus:border-primary"
-              onFocus={() => setIsSearchOpen(true)}
-              onBlur={() => setIsSearchOpen(false)}
-            />
-          </div>
-
           {/* Chat Assistant */}
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
             <MessageCircle className="h-4 w-4 mr-2" />
@@ -89,15 +78,6 @@ const Header = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-80">
             <div className="flex flex-col space-y-6 mt-6">
-              {/* Mobile Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search cultures, people..."
-                  className="pl-10 bg-muted/50"
-                />
-              </div>
-
               {/* Mobile Navigation */}
               <nav className="flex flex-col space-y-4">
                 {navItems.map((item) => (
