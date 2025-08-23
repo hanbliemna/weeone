@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
-import WiwiChatbot from "@/components/WiwiChatbot";
 
 const MainFeed = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -273,9 +272,6 @@ const MainFeed = () => {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Wiwi Chatbot */}
-      <WiwiChatbot />
     </div>
   );
 };
