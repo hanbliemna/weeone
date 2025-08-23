@@ -335,7 +335,7 @@ const ProfileSetup = () => {
                     <SelectContent className="max-h-48">
                           {countries.map((country) => (
                             <SelectItem key={country.code} value={country.name}>
-                              {country.name}
+                              {country.display}
                             </SelectItem>
                           ))}
                     </SelectContent>
@@ -360,7 +360,7 @@ const ProfileSetup = () => {
                     <SelectContent className="max-h-48">
                       {countries.map((country) => (
                         <SelectItem key={country.code} value={country.name}>
-                          {country.name}
+                          {country.display}
                         </SelectItem>
                       ))}
                     </SelectContent>

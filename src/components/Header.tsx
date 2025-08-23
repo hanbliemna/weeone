@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Menu, Globe, Wifi, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getCountryFlag } from "@/utils/countryFlags";
 
 const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -117,14 +118,22 @@ const Header = () => {
                 <span className="text-sm text-muted-foreground">Connected</span>
               </div>
               
-              {/* User Profile with Visitor's color border */}
+              {/* User Profile with Visitor's color border and country flag */}
               <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8 border-2 border-accent">
-                  <AvatarImage src={profile?.profile_photo} />
-                  <AvatarFallback className="bg-accent text-white text-sm">
-                    {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-8 w-8 border-2 border-accent">
+                    <AvatarImage src={profile?.profile_photo} />
+                    <AvatarFallback className="bg-accent text-white text-sm">
+                      {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {/* Country flag overlay */}
+                  {profile?.nationality && (
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-background rounded-full flex items-center justify-center text-xs border border-border">
+                      {getCountryFlag(profile.nationality)}
+                    </div>
+                  )}
+                </div>
                 <span className="text-sm font-medium text-foreground">
                   {profile?.username || 'Visitor'}
                 </span>
@@ -173,12 +182,20 @@ const Header = () => {
                   // Main Feed Mobile Profile
                   <>
                     <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                      <Avatar className="h-10 w-10 border-2 border-accent">
-                        <AvatarImage src={profile?.profile_photo} />
-                        <AvatarFallback className="bg-accent text-white">
-                          {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative">
+                        <Avatar className="h-10 w-10 border-2 border-accent">
+                          <AvatarImage src={profile?.profile_photo} />
+                          <AvatarFallback className="bg-accent text-white">
+                            {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* Country flag overlay for mobile */}
+                        {profile?.nationality && (
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full flex items-center justify-center text-sm border border-border">
+                            {getCountryFlag(profile.nationality)}
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <p className="font-medium text-foreground">{profile?.username || 'Visitor'}</p>
                         <div className="flex items-center space-x-1">
