@@ -47,14 +47,14 @@ export type Database = {
       profiles: {
         Row: {
           account_type: string | null
-          country_of_residence: string
+          country_of_residence: string | null
           created_at: string | null
           cultural_preferences: string[] | null
-          date_of_birth: string
+          date_of_birth: string | null
           gender: string | null
           id: string
           languages_spoken: string[] | null
-          nationality: string
+          nationality: string | null
           profile_photo: string | null
           topics_of_interest: string[] | null
           updated_at: string | null
@@ -64,14 +64,14 @@ export type Database = {
         }
         Insert: {
           account_type?: string | null
-          country_of_residence: string
+          country_of_residence?: string | null
           created_at?: string | null
           cultural_preferences?: string[] | null
-          date_of_birth: string
+          date_of_birth?: string | null
           gender?: string | null
           id?: string
           languages_spoken?: string[] | null
-          nationality: string
+          nationality?: string | null
           profile_photo?: string | null
           topics_of_interest?: string[] | null
           updated_at?: string | null
@@ -81,14 +81,14 @@ export type Database = {
         }
         Update: {
           account_type?: string | null
-          country_of_residence?: string
+          country_of_residence?: string | null
           created_at?: string | null
           cultural_preferences?: string[] | null
-          date_of_birth?: string
+          date_of_birth?: string | null
           gender?: string | null
           id?: string
           languages_spoken?: string[] | null
-          nationality?: string
+          nationality?: string | null
           profile_photo?: string | null
           topics_of_interest?: string[] | null
           updated_at?: string | null
