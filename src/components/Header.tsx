@@ -56,7 +56,7 @@ const Header = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
-        <img src="/WeeONE_LOGO.png" alt="logo" width="150" />
+        <img src="/WeeONE_LOGO.png" alt="logo" width="175" />
         </Link>
 
         {/* Desktop Navigation - Hidden on main feed */}
