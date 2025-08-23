@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, ArrowRight, Upload, User, Globe, BookOpen, Heart, Camera, Crown, Flag } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, ArrowRight, Upload, User, Calendar, Globe, Users, Crown, CheckCircle } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import Header from "@/components/Header";
+import { countries } from "@/data/countries";
+import { languages } from "@/data/languages";
+import { PricingModal } from "@/components/PricingModal";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters"),
@@ -31,31 +34,48 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const languages = [
-  "English", "Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Chinese", "Japanese", "Korean",
-  "Arabic", "Hindi", "Bengali", "Turkish", "Vietnamese", "Thai", "Indonesian", "Malay", "Dutch", "Swedish",
-  "Norwegian", "Danish", "Finnish", "Polish", "Czech", "Hungarian", "Romanian", "Greek", "Hebrew", "Swahili"
-];
-
-const interests = [
-  "Travel", "Food & Cuisine", "Music", "Art", "Literature", "Photography", "History", "Language Learning",
-  "Traditional Crafts", "Folk Dances", "Festivals", "Religion & Spirituality", "Philosophy", "Sports",
-  "Technology", "Science", "Fashion", "Architecture", "Film & Cinema", "Theater", "Storytelling"
-];
-
 const culturalPreferences = [
   "Traditional Music", "Modern Art", "Historical Sites", "Local Festivals", "Street Food", "Museums",
   "Religious Ceremonies", "Folk Tales", "Traditional Clothing", "Cultural Exchanges", "Language Practice",
   "Cultural Workshops", "Community Events", "Cultural Tours", "International Friendships"
 ];
 
+const topicsOfInterest = [
+  "Travel", "Food & Cuisine", "Music", "Art", "Literature", "Photography", "History", "Language Learning",
+  "Traditional Crafts", "Folk Dances", "Festivals", "Religion & Spirituality", "Philosophy", "Sports",
+  "Technology", "Science", "Fashion", "Architecture", "Film & Cinema", "Theater", "Storytelling"
+];
+
 const ProfileSetup = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [accountType, setAccountType] = useState<'visitor' | 'global_citizen'>('visitor');
+  const [profileImage, setProfileImage] = useState<string>("");
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is authenticated and email is verified
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate("/register/form");
+        return;
+      }
+      
+      if (!user.email_confirmed_at) {
+        navigate("/register/email-verification");
+        return;
+      }
+      
+      setUser(user);
+    };
+
+    checkAuth();
+  }, [navigate]);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -98,58 +118,60 @@ const ProfileSetup = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+    if (currentStep < 4) {
+      nextStep();
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("No user found. Please log in again.");
-      }
+      if (!user) throw new Error("No authenticated user found");
 
-      // Calculate age from date of birth
-      const birthDate = new Date(data.dateOfBirth);
+      // Check if user is at least 13 years old
       const today = new Date();
+      const birthDate = new Date(data.dateOfBirth);
       const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
       
-      if (age < 13) {
-        throw new Error("You must be at least 13 years old to create an account.");
+      if (age < 13 || (age === 13 && monthDiff < 0) || 
+          (age === 13 && monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        toast({
+          title: "Age Requirement",
+          description: "You must be at least 13 years old to create an account.",
+          variant: "destructive",
+        });
+        return;
       }
 
-      // Insert profile data into Supabase
+      // Insert profile data - use profiles table directly
       const { error } = await supabase
         .from('profiles')
-        .insert([
-          {
-            user_id: user.id,
-            username: data.username,
-            profile_photo: data.profilePhoto || null,
-            gender: data.gender,
-            date_of_birth: data.dateOfBirth,
-            nationality: data.nationality,
-            country_of_residence: data.countryOfResidence,
-            languages_spoken: data.languagesSpoken,
-            cultural_preferences: data.culturalPreferences,
-            topics_of_interest: data.topicsOfInterest,
-            account_type: accountType,
-          }
-        ]);
+        .insert({
+          user_id: user.id,
+          username: data.username,
+          profile_photo: profileImage,
+          gender: data.gender,
+          date_of_birth: data.dateOfBirth,
+          nationality: data.nationality,
+          country_of_residence: data.countryOfResidence,
+          languages_spoken: data.languagesSpoken,
+          cultural_preferences: data.culturalPreferences,
+          topics_of_interest: data.topicsOfInterest,
+          account_type: "visitor", // Always start as visitor
+        });
 
-      if (error) {
-        throw error;
-      }
-      
+      if (error) throw error;
+
       toast({
         title: "Profile Created Successfully!",
-        description: `Welcome to WeeOne, ${data.username}! Your cultural journey begins now.`,
+        description: "Welcome to WeeOne! Your cultural journey begins now.",
       });
       
-      // Navigate to main feed
       navigate("/feed");
     } catch (error: any) {
       toast({
-        title: "Profile Setup Failed",
+        title: "Profile Creation Failed",
         description: error.message || "Please try again. If the problem persists, contact support.",
         variant: "destructive",
       });
@@ -185,17 +207,6 @@ const ProfileSetup = () => {
     return false;
   };
 
-  const countries = [
-    "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria", "Bangladesh", "Belgium", 
-    "Brazil", "Bulgaria", "Canada", "Chile", "China", "Colombia", "Croatia", "Czech Republic", 
-    "Denmark", "Ecuador", "Egypt", "Finland", "France", "Germany", "Ghana", "Greece", "Hungary", 
-    "India", "Indonesia", "Iran", "Iraq", "Ireland", "Italy", "Japan", "Jordan", "Kenya", 
-    "South Korea", "Lebanon", "Malaysia", "Mexico", "Morocco", "Netherlands", "Nigeria", "Norway", 
-    "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Romania", "Russia", "Saudi Arabia", 
-    "South Africa", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine", "United Kingdom", 
-    "United States", "Venezuela", "Vietnam"
-  ];
-
   const genders = ["Male", "Female", "Non-binary", "Prefer not to say"];
 
   const renderStepContent = () => {
@@ -217,7 +228,7 @@ const ProfileSetup = () => {
                     <img src={profileImage} alt="Profile" className="w-full h-full object-cover rounded-full" />
                   ) : (
                     <AvatarFallback className="text-2xl bg-gradient-cultural text-white">
-                      <Camera className="h-8 w-8" />
+                      <User className="h-8 w-8" />
                     </AvatarFallback>
                   )}
                 </Avatar>
@@ -260,7 +271,7 @@ const ProfileSetup = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Heart className="h-12 w-12 text-secondary mx-auto mb-4" />
+              <Calendar className="h-12 w-12 text-secondary mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-secondary">Personal Details</h3>
               <p className="text-sm text-muted-foreground">Tell us more about yourself</p>
             </div>
@@ -368,7 +379,7 @@ const ProfileSetup = () => {
             <div className="text-center mb-6">
               <Globe className="h-12 w-12 text-accent mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-accent">Cultural Interests</h3>
-              <p className="text-sm text-muted-foreground">Share your cultural preferences</p>
+              <p className="text-sm text-muted-foreground">Help us personalize your cultural experience</p>
             </div>
 
             <FormField
@@ -377,25 +388,22 @@ const ProfileSetup = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Languages You Speak</FormLabel>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
+                  <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto border rounded-lg p-4 bg-muted/20">
                     {languages.map((language) => (
                       <div key={language} className="flex items-center space-x-2">
                         <Checkbox
                           id={`language-${language}`}
-                          checked={field.value.includes(language)}
+                          checked={field.value?.includes(language)}
                           onCheckedChange={(checked) => {
                             const updatedLanguages = checked
-                              ? [...field.value, language]
-                              : field.value.filter((l) => l !== language);
+                              ? [...(field.value || []), language]
+                              : (field.value || []).filter((l) => l !== language);
                             field.onChange(updatedLanguages);
                           }}
                         />
-                        <label
-                          htmlFor={`language-${language}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
+                        <Label htmlFor={`language-${language}`} className="text-sm">
                           {language}
-                        </label>
+                        </Label>
                       </div>
                     ))}
                   </div>
@@ -410,25 +418,22 @@ const ProfileSetup = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cultural Preferences</FormLabel>
-                  <div className="grid grid-cols-1 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
+                  <div className="grid grid-cols-2 gap-2">
                     {culturalPreferences.map((preference) => (
                       <div key={preference} className="flex items-center space-x-2">
                         <Checkbox
-                          id={`preference-${preference}`}
-                          checked={field.value.includes(preference)}
+                          id={`culture-${preference}`}
+                          checked={field.value?.includes(preference)}
                           onCheckedChange={(checked) => {
                             const updatedPreferences = checked
-                              ? [...field.value, preference]
-                              : field.value.filter((p) => p !== preference);
+                              ? [...(field.value || []), preference]
+                              : (field.value || []).filter((p) => p !== preference);
                             field.onChange(updatedPreferences);
                           }}
                         />
-                        <label
-                          htmlFor={`preference-${preference}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
+                        <Label htmlFor={`culture-${preference}`} className="text-sm">
                           {preference}
-                        </label>
+                        </Label>
                       </div>
                     ))}
                   </div>
@@ -443,25 +448,22 @@ const ProfileSetup = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Topics of Interest</FormLabel>
-                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto border rounded-lg p-4 bg-muted/20">
-                    {interests.map((interest) => (
-                      <div key={interest} className="flex items-center space-x-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    {topicsOfInterest.map((topic) => (
+                      <div key={topic} className="flex items-center space-x-2">
                         <Checkbox
-                          id={`interest-${interest}`}
-                          checked={field.value.includes(interest)}
+                          id={`topic-${topic}`}
+                          checked={field.value?.includes(topic)}
                           onCheckedChange={(checked) => {
-                            const updatedInterests = checked
-                              ? [...field.value, interest]
-                              : field.value.filter((i) => i !== interest);
-                            field.onChange(updatedInterests);
+                            const updatedTopics = checked
+                              ? [...(field.value || []), topic]
+                              : (field.value || []).filter((t) => t !== topic);
+                            field.onChange(updatedTopics);
                           }}
                         />
-                        <label
-                          htmlFor={`interest-${interest}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          {interest}
-                        </label>
+                        <Label htmlFor={`topic-${topic}`} className="text-sm">
+                          {topic}
+                        </Label>
                       </div>
                     ))}
                   </div>
@@ -476,99 +478,110 @@ const ProfileSetup = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Flag className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-primary">Account Type & Review</h3>
-              <p className="text-sm text-muted-foreground">Choose your account type and review your profile</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Choose Your Journey</h3>
+              <p className="text-muted-foreground">All new users start as Visitors</p>
             </div>
 
-            {/* Account Type Selection */}
             <div className="space-y-4">
-              <h4 className="font-semibold text-sm">Account Type</h4>
-              <div className="grid grid-cols-1 gap-4">
-                <div 
-                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                    accountType === 'visitor' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                  onClick={() => setAccountType('visitor')}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <h5 className="font-semibold">Visitor</h5>
-                      <p className="text-sm text-muted-foreground">Start your cultural journey</p>
-                    </div>
+              {/* Visitor Card - Always Selected */}
+              <div className="p-4 border border-accent bg-accent/5 rounded-lg">
+                <div className="flex items-center space-x-3 mb-3">
+                  <Globe className="h-6 w-6 text-accent" />
+                  <h4 className="font-semibold text-foreground">The Visitor</h4>
+                  <CheckCircle className="h-5 w-5 text-accent ml-auto" />
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Perfect for exploring cultures and making new connections
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-3 w-3 text-accent" />
+                    <span className="text-muted-foreground">Browse cultural stories</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-3 w-3 text-accent" />
+                    <span className="text-muted-foreground">Join public channels</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-3 w-3 text-accent" />
+                    <span className="text-muted-foreground">Limited messaging (5 per day)</span>
                   </div>
                 </div>
-                
-                <div 
-                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                    accountType === 'global_citizen' 
-                      ? 'border-accent bg-accent/5' 
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                  onClick={() => setAccountType('global_citizen')}
+                <div className="mt-3 text-lg font-bold text-accent">Free</div>
+              </div>
+
+              {/* Upgrade Button */}
+              <div className="text-center">
+                <Button
+                  type="button"
+                  onClick={() => setIsPricingModalOpen(true)}
+                  className="cta-button"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-                      <Crown className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <h5 className="font-semibold">Global Citizen</h5>
-                      <p className="text-sm text-muted-foreground">Unlock exclusive features and connect deeper</p>
-                    </div>
-                  </div>
-                </div>
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Global Citizen
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  You can upgrade anytime to unlock premium features
+                </p>
               </div>
             </div>
 
             {/* Profile Summary */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-              <h4 className="font-semibold text-sm">Profile Summary</h4>
-              <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Username:</span> {form.watch("username")}</p>
-                <p><span className="font-medium">Gender:</span> {form.watch("gender")}</p>
-                <p><span className="font-medium">Nationality:</span> {form.watch("nationality")}</p>
-                <p><span className="font-medium">Languages:</span> {form.watch("languagesSpoken").join(", ")}</p>
-                <p><span className="font-medium">Account Type:</span> 
-                  <Badge variant="outline" className="ml-2">
-                    {accountType === 'visitor' ? 'Visitor' : 'Global Citizen'}
-                  </Badge>
-                </p>
+            <div className="bg-muted/20 p-4 rounded-lg">
+              <h4 className="font-semibold text-foreground mb-3">Profile Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Username:</span>
+                  <span className="ml-2 text-foreground font-medium">{form.watch('username')}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Gender:</span>
+                  <span className="ml-2 text-foreground font-medium">{form.watch('gender')}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Nationality:</span>
+                  <span className="ml-2 text-foreground font-medium">{form.watch('nationality')}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Residence:</span>
+                  <span className="ml-2 text-foreground font-medium">{form.watch('countryOfResidence')}</span>
+                </div>
+                <div className="md:col-span-2">
+                  <span className="text-muted-foreground">Languages:</span>
+                  <span className="ml-2 text-foreground font-medium">
+                    {form.watch('languagesSpoken')?.join(', ') || 'None selected'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         );
-
-      default:
-        return null;
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
+      
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-primary">Profile Setup</span>
-              <span className="text-sm text-muted-foreground">Step {currentStep} of {totalSteps}</span>
+              <span className="text-sm font-medium text-muted-foreground">Step {currentStep} of {totalSteps}</span>
+              <span className="text-sm font-medium text-primary">{Math.round(progress)}% Complete</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
 
           <Card className="cultural-card border-primary/30 shadow-cultural">
             <CardHeader className="text-center">
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-gradient-cultural flex items-center justify-center">
+                <Users className="h-6 w-6 text-white" />
+              </div>
               <CardTitle className="text-2xl font-display text-primary">
                 Complete Your Profile
               </CardTitle>
-              <CardDescription className="text-base">
-                Help us create the perfect cultural experience for you
-              </CardDescription>
             </CardHeader>
             
             <CardContent>
@@ -577,7 +590,7 @@ const ProfileSetup = () => {
                   {renderStepContent()}
 
                   {/* Navigation Buttons */}
-                  <div className="flex justify-between pt-6 border-t border-border/50">
+                  <div className="flex justify-between pt-6">
                     {currentStep > 1 && (
                       <Button
                         type="button"
@@ -590,26 +603,28 @@ const ProfileSetup = () => {
                       </Button>
                     )}
                     
-                    {currentStep < totalSteps ? (
-                      <Button
-                        type="button"
-                        onClick={nextStep}
-                        disabled={!validateCurrentStep()}
-                        className="ml-auto flex items-center bg-gradient-cultural hover:shadow-glow"
-                      >
-                        Next
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        disabled={isSubmitting || !validateCurrentStep()}
-                        className="ml-auto flex items-center bg-gradient-cultural hover:shadow-glow"
-                      >
-                        {isSubmitting ? "Creating Profile..." : "Complete Profile"}
-                        {!isSubmitting && <ArrowRight className="h-4 w-4 ml-2" />}
-                      </Button>
-                    )}
+                    <div className="ml-auto">
+                      {currentStep < totalSteps ? (
+                        <Button
+                          type="button"
+                          onClick={nextStep}
+                          disabled={!validateCurrentStep()}
+                          className="flex items-center cta-button"
+                        >
+                          Next
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="flex items-center cta-button"
+                        >
+                          {isSubmitting ? "Creating Profile..." : "Complete Setup"}
+                          {!isSubmitting && <CheckCircle className="h-4 w-4 ml-2" />}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </form>
               </Form>

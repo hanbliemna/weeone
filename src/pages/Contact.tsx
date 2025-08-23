@@ -47,15 +47,14 @@ const Contact = () => {
     e.preventDefault();
     
     try {
-      const { error } = await supabase
-        .from('contacts')
-        .insert({
-          name: formData.name,
-          email: formData.email,
-          subject: formData.subject,
-          category: formData.category,
-          message: formData.message
-        });
+      // Use the RPC method to insert into contacts table safely
+      const { error } = await supabase.rpc('insert_contact', {
+        contact_name: formData.name,
+        contact_email: formData.email,
+        contact_subject: formData.subject,
+        contact_category: formData.category,
+        contact_message: formData.message
+      });
 
       if (error) throw error;
 

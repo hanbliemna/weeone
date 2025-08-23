@@ -3,7 +3,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Globe, Mail, Phone, Facebook, Instagram, Twitter, Youtube, Smartphone, Download } from "lucide-react";
 
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubscribing(true);
+    try {
+      // Use RPC method to safely insert subscription
+      const { error } = await supabase.rpc('insert_subscription', {
+        subscription_email: email
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Successfully Subscribed!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Subscription Failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <footer className="bg-gradient-community border-t border-border/40">
       {/* Newsletter Section */}
@@ -15,15 +52,19 @@ const Footer = () => {
           <p className="text-muted-foreground mb-6">
             Get the latest cultural stories, community updates, and exclusive content delivered to your inbox.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               className="flex-1 bg-background/50 border-border/50 focus:border-primary"
+              required
             />
-            <Button className="cta-button whitespace-nowrap">
-              Subscribe
+            <Button type="submit" disabled={isSubscribing} className="cta-button whitespace-nowrap">
+              {isSubscribing ? "Subscribing..." : "Subscribe"}
             </Button>
-          </div>
+          </form>
         </div>
       </div>
 

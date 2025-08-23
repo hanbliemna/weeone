@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      contacts: {
+        Row: {
+          category: string
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_type: string | null
@@ -28,6 +58,7 @@ export type Database = {
           profile_photo: string | null
           topics_of_interest: string[] | null
           updated_at: string | null
+          user_email: string | null
           user_id: string
           username: string
         }
@@ -44,6 +75,7 @@ export type Database = {
           profile_photo?: string | null
           topics_of_interest?: string[] | null
           updated_at?: string | null
+          user_email?: string | null
           user_id: string
           username: string
         }
@@ -60,8 +92,30 @@ export type Database = {
           profile_photo?: string | null
           topics_of_interest?: string[] | null
           updated_at?: string | null
+          user_email?: string | null
           user_id?: string
           username?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          email: string
+          id: string
+          is_active: boolean | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_active?: boolean | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          subscribed_at?: string
         }
         Relationships: []
       }
