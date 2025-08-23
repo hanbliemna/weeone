@@ -124,7 +124,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_contact: {
+        Args: {
+          contact_category: string
+          contact_email: string
+          contact_message: string
+          contact_name: string
+          contact_subject: string
+        }
+        Returns: undefined
+      }
+      insert_subscription: {
+        Args: { subscription_email: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

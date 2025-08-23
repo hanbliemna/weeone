@@ -18,9 +18,9 @@ const Footer = () => {
 
     setIsSubscribing(true);
     try {
-      // Use RPC method to safely insert subscription
-      const { error } = await supabase.rpc('insert_subscription', {
-        subscription_email: email
+      // For now, let's use a workaround until types are updated
+      const { error } = await (supabase as any).from('subscriptions').insert({
+        email: email
       });
 
       if (error) throw error;
