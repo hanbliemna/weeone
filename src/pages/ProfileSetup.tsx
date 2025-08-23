@@ -144,11 +144,10 @@ const ProfileSetup = () => {
         return;
       }
 
-      // Insert profile data - use profiles table directly
+      // Update existing profile with detailed data from setup form
       const { error } = await supabase
         .from('profiles')
-        .insert({
-          user_id: user.id,
+        .update({
           username: data.username,
           profile_photo: profileImage,
           gender: data.gender,
@@ -158,8 +157,8 @@ const ProfileSetup = () => {
           languages_spoken: data.languagesSpoken,
           cultural_preferences: data.culturalPreferences,
           topics_of_interest: data.topicsOfInterest,
-          account_type: "visitor", // Always start as visitor
-        });
+        })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
