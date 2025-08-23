@@ -56,14 +56,7 @@ const Header = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
-          <div className="relative">
-            <Globe className="h-8 w-8 text-primary group-hover:text-primary-light transition-colors duration-300" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse-glow"></div>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold font-display text-foreground">WeeOne</h1>
-            <p className="text-xs text-muted-foreground -mt-1">Cultures United</p>
-          </div>
+        <img src="/WeeONE_LOGO.png" alt="logo" />
         </Link>
 
         {/* Desktop Navigation - Hidden on main feed */}
