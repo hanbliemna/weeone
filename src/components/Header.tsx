@@ -3,13 +3,17 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, Globe, Wifi, MessageCircle } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu, Globe, Wifi, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [currentLanguage, setCurrentLanguage] = useState<string>("English");
   const location = useLocation();
+
+  const supportedLanguages = ["English", "French", "Spanish", "Arabic"];
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -61,40 +65,63 @@ const Header = () => {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`text-sm font-medium transition-colors duration-300 hover:text-primary relative group ${
-                isActive(item.href) ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              {item.label}
-              <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full ${
-                isActive(item.href) ? "w-full" : ""
-              }`}></span>
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation - Hidden on main feed */}
+        {!isMainFeed && (
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`text-sm font-medium transition-colors duration-300 hover:text-primary relative group ${
+                  isActive(item.href) ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                {item.label}
+                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full ${
+                  isActive(item.href) ? "w-full" : ""
+                }`}></span>
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
           {isMainFeed && user ? (
-            // Main Feed User Profile
-            <div className="flex items-center space-x-3">
+            // Main Feed Navigation - Only show logo, profile, connected status, and language selector
+            <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                    <Languages className="h-4 w-4 mr-2" />
+                    {currentLanguage}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {supportedLanguages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang}
+                      onClick={() => setCurrentLanguage(lang)}
+                      className={currentLanguage === lang ? "bg-muted text-primary" : ""}
+                    >
+                      {lang}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Connected Status */}
               <div className="flex items-center space-x-2">
-                <Wifi className="h-4 w-4 text-green-500" />
+                <Wifi className="h-4 w-4 text-accent" />
                 <span className="text-sm text-muted-foreground">Connected</span>
               </div>
               
-              {/* User Profile */}
+              {/* User Profile with Visitor's color border */}
               <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8 border-2 border-secondary">
+                <Avatar className="h-8 w-8 border-2 border-accent">
                   <AvatarImage src={profile?.profile_photo} />
-                  <AvatarFallback className="bg-secondary text-white text-sm">
+                  <AvatarFallback className="bg-accent text-white text-sm">
                     {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -104,12 +131,8 @@ const Header = () => {
               </div>
             </div>
           ) : (
-            // Default Actions for other pages
+            // Default Actions for other pages (removed 24/7 Chat)
             <>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                24/7 Chat
-              </Button>
               <Button variant="outline" size="sm" className="border-primary/20 hover:bg-primary/5">
                 Sign In
               </Button>
@@ -148,27 +171,46 @@ const Header = () => {
               <div className="flex flex-col space-y-3 pt-6 border-t border-border">
                 {isMainFeed && user ? (
                   // Main Feed Mobile Profile
-                  <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                    <Avatar className="h-10 w-10 border-2 border-secondary">
-                      <AvatarImage src={profile?.profile_photo} />
-                      <AvatarFallback className="bg-secondary text-white">
-                        {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-foreground">{profile?.username || 'Visitor'}</p>
-                      <div className="flex items-center space-x-1">
-                        <Wifi className="h-3 w-3 text-green-500" />
-                        <span className="text-xs text-muted-foreground">Connected</span>
+                  <>
+                    <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
+                      <Avatar className="h-10 w-10 border-2 border-accent">
+                        <AvatarImage src={profile?.profile_photo} />
+                        <AvatarFallback className="bg-accent text-white">
+                          {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-foreground">{profile?.username || 'Visitor'}</p>
+                        <div className="flex items-center space-x-1">
+                          <Wifi className="h-3 w-3 text-accent" />
+                          <span className="text-xs text-muted-foreground">Connected</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                    
+                    {/* Mobile Language Selector */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <Languages className="h-4 w-4" />
+                        <span>Language</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {supportedLanguages.map((lang) => (
+                          <Button
+                            key={lang}
+                            variant={currentLanguage === lang ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentLanguage(lang)}
+                            className="text-xs"
+                          >
+                            {lang}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
-                    <Button variant="ghost" className="justify-start text-muted-foreground hover:text-primary">
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      24/7 Chat Assistant
-                    </Button>
                     <Button variant="outline" className="border-primary/20 hover:bg-primary/5">
                       Sign In
                     </Button>
