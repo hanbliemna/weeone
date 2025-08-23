@@ -334,11 +334,11 @@ const ProfileSetup = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-48">
-                      {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
+                          {countries.map((country) => (
+                            <SelectItem key={country.code} value={country.name}>
+                              {country.name}
+                            </SelectItem>
+                          ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -360,8 +360,8 @@ const ProfileSetup = () => {
                     </FormControl>
                     <SelectContent className="max-h-48">
                       {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
-                          {country}
+                        <SelectItem key={country.code} value={country.name}>
+                          {country.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
