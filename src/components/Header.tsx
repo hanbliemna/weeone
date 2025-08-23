@@ -131,7 +131,7 @@ const Header = () => {
               </div>
             </div>
           ) : (
-            // Default Actions for other pages (removed 24/7 Chat)
+            // Default Actions for other pages (no 24/7 Chat)
             <>
               <Button variant="outline" size="sm" className="border-primary/20 hover:bg-primary/5">
                 Sign In
