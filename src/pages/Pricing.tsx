@@ -49,33 +49,30 @@ const Pricing = () => {
   ];
 
   const pricingData = {
-    high: { visitor: 0, master: isAnnual ? 99.99 : 12.99 },
-    middle: { visitor: 0, master: isAnnual ? 59.99 : 7.99 },
-    low: { visitor: 0, master: isAnnual ? 29.99 : 3.99 }
+    high: { VisitorPass: 0, GlobalCitizenPass: isAnnual ? 79.99 : 7.99 },
+    middle: { VisitorPass: 0, GlobalCitizenPass: isAnnual ? 59.99 : 5.99 },
+    low: { VisitorPass: 0, GlobalCitizenPass: isAnnual ? 39.99 : 3.99 }
   };
 
-  const visitorFeatures = [
+  const VisitorFeatures = [
     "Browse cultural stories and posts",
     "Basic cultural quizzes",
     "Limited messaging (5 per day)",
-    "Join public country channels",
+    "Join up 3 country channels",
     "Basic profile customization",
     "Community guidelines access"
   ];
 
-  const masterFeatures = [
-    "Everything in Visitor plan",
+  const GlobalCitizenFeatures = [
+    "Browse cultural stories and posts",
     "Unlimited messaging and connections",
-    "Premium cultural content & stories",
     "Advanced cultural quizzes & games",
-    "Private country channels access",
-    "Video calls with cultural mentors",
+    "Unlimited country channels access",
     "Exclusive global events",
     "Cultural achievement badges",
+    "Free Digital Cultural Souvenirs",
     "Priority customer support",
     "Ad-free experience",
-    "Cultural gift exchange program",
-    "Monthly cultural care packages*"
   ];
 
   const inAppPurchases = [
@@ -109,30 +106,26 @@ const Pricing = () => {
     {
       category: "Cultural Content",
       features: [
-        { name: "Browse Cultural Stories", visitor: true, master: true },
-        { name: "Basic Cultural Quizzes", visitor: true, master: true },
-        { name: "Premium Cultural Content", visitor: false, master: true },
-        { name: "Advanced Quizzes & Games", visitor: false, master: true },
-        { name: "Cultural Mentorship", visitor: false, master: true }
+        { name: "Access to Cultural Stories", visitor: true, GlobalCitizen: true },
+        { name: "Access to Welcome Cultural Quiz", visitor: true, GlobalCitizen: true },
+        { name: "Advanced Quizzes & Games", visitor: false, GlobalCitizen: true },
       ]
     },
     {
       category: "Community Features",
       features: [
-        { name: "Public Country Channels", visitor: true, master: true },
-        { name: "Limited Messaging (5/day)", visitor: true, master: false },
-        { name: "Unlimited Messaging", visitor: false, master: true },
-        { name: "Private Channels Access", visitor: false, master: true },
-        { name: "Video Calls", visitor: false, master: true }
+        { name: "Access to Country Channels", Visitor= "Limited", GlobalCitizen= "Unlimited" },
+        { name: "Messaging", Visitor="Limited (5/day)", GlobalCitizen="Unlimited" },
+        { name: "Video Calls", Visitor: false, GlobalCitizen: true }
       ]
     },
     {
       category: "Events & Experiences",
       features: [
-        { name: "Public Events", visitor: true, master: true },
-        { name: "Exclusive Global Events", visitor: false, master: true },
-        { name: "Cultural Workshops", visitor: false, master: true },
-        { name: "VIP Event Access", visitor: false, master: true }
+        { name: "Public Events", Visitor: true, GlobalCitizen: true },
+        { name: "Exclusive Global Events", Visitor: false, GlobalCitizen: true },
+        { name: "Cultural Workshops", Visitor: false, GlobalCitizen: true },
+        { name: "VIP Event Access", Visitor: false, GlobalCitizen: true }
       ]
     }
   ];
@@ -155,7 +148,7 @@ const Pricing = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Start free as a Visitor or unlock the full cultural experience as a Master. 
+            Start free as a Visitor or unlock the full cultural experience as a Global Citizen. 
             Regional pricing ensures everyone can join our global community.
           </p>
 
@@ -174,7 +167,7 @@ const Pricing = () => {
             </span>
             {isAnnual && (
               <Badge variant="secondary" className="bg-accent text-white">
-                Save 35%
+                Get 2 months FREE Subscription
               </Badge>
             )}
           </div>
@@ -244,7 +237,7 @@ const Pricing = () => {
               </CardContent>
             </Card>
 
-            {/* Master Plan */}
+            {/* Global Citizen Plan */}
             <Card className="cultural-card border-2 border-primary relative overflow-hidden">
               {/* Popular Badge */}
               <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 text-xs font-medium">
@@ -255,14 +248,14 @@ const Pricing = () => {
                 <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
                   <Crown className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-2xl font-bold font-display">The Master</CardTitle>
+                <CardTitle className="text-2xl font-bold font-display">The Global Citizen</CardTitle>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-foreground">
                     ${pricingData[selectedRegion].master}
                   </span>
                   <span className="text-muted-foreground">/{isAnnual ? 'year' : 'month'}</span>
                   {isAnnual && (
-                    <p className="text-sm text-accent mt-1">Save 35% with annual billing</p>
+                    <p className="text-sm text-accent mt-1">Get 2 months FREE Subscription</p>
                   )}
                   <p className="text-muted-foreground mt-2">Full cultural experience</p>
                 </div>
@@ -277,7 +270,7 @@ const Pricing = () => {
                   ))}
                 </div>
                 <Button className="w-full mt-6 cta-button">
-                  Become a Master
+                  Become a Global Citizen
                   <Crown className="ml-2 h-4 w-4" />
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
@@ -406,10 +399,6 @@ const Pricing = () => {
                 question: "Are in-app purchases necessary to enjoy WeeOne?",
                 answer: "Not at all! Both Visitor and Master plans provide complete cultural experiences. In-app purchases are purely optional enhancements."
               },
-              {
-                question: "Do you offer student discounts?",
-                answer: "Yes! Students with valid .edu email addresses receive an additional 50% discount on Master subscriptions. Cultural education should be accessible!"
-              }
             ].map((faq, index) => (
               <Card key={index} className="cultural-card">
                 <CardContent className="p-6">
@@ -444,7 +433,7 @@ const Pricing = () => {
                 variant="outline" 
                 className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 rounded-full font-semibold"
               >
-                Become a Master
+                Become a Global Citizen
                 <Crown className="ml-2 h-5 w-5" />
               </Button>
             </div>
