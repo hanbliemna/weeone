@@ -35,7 +35,6 @@ const MainFeed = () => {
       hashtags: ["#Brazil", "#Portuguese", "#FestaJunina", "#Tradition"],
       likes: 124,
       comments: 18,
-      shares: 7,
       userType: "global_citizen",
       profilePhoto: null
     },
@@ -49,7 +48,6 @@ const MainFeed = () => {
       hashtags: ["#Japan", "#Japanese", "#Origami", "#Peace"],
       likes: 89,
       comments: 12,
-      shares: 23,
       userType: "visitor",
       profilePhoto: null
     },
@@ -63,18 +61,17 @@ const MainFeed = () => {
       hashtags: ["#Mali", "#Bambara", "#OralTradition", "#Sundiata"],
       likes: 156,
       comments: 24,
-      shares: 15,
       userType: "global_citizen",
       profilePhoto: null
     }
   ]);
 
   const [channelSuggestions] = useState([
-    { name: "🇧🇷 Brazilian Culture", members: "2.3k", category: "Country" },
-    { name: "🎵 Traditional Music", members: "1.8k", category: "Culture" },
-    { name: "🍜 Asian Cuisine", members: "3.1k", category: "Food" },
-    { name: "🎨 Indigenous Arts", members: "924", category: "Art" },
-    { name: "🇲🇽 Mexican Heritage", members: "1.5k", category: "Country" },
+    { name: "🇧🇷 Brazilian Channel", members: "2.3k", category: "Country" },
+    { name: "Chinese Channel", members: "1.8k", category: "Culture" },
+    { name: "Tunisian Channel", members: "3.1k", category: "Food" },
+    { name: "Congolese Channel", members: "924", category: "Art" },
+    { name: "Hungarian Channel", members: "1.5k", category: "Country" },
   ]);
 
   const getUserIcon = (userType: string) => {
