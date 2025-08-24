@@ -250,7 +250,7 @@ const Pricing = () => {
                 <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
                   <Crown className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-2xl font-bold font-display">The Master</CardTitle>
+                <CardTitle className="text-2xl font-bold font-display">The Global Citizen</CardTitle>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-foreground">
                     ${pricingData[selectedRegion].master}
