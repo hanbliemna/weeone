@@ -15,7 +15,7 @@ const MainFeedTabs = () => {
   return (
     <div className="flex items-center justify-between mb-6">
       {/* Navigation Tabs */}
-      <Tabs defaultValue="feed" className="flex-1">
+      <Tabs defaultValue="feed" className="justify-end">
         <TabsList className="bg-muted/50">
           <TabsTrigger value="feed">Feed</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
@@ -31,8 +31,8 @@ const MainFeedTabs = () => {
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="h-5 w-5" />
             {notifications.length > 0 && (
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
               >
                 {notifications.length}

@@ -7,12 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  ArrowLeft, 
-  Users, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
+import {
+  ArrowLeft,
+  Users,
+  MapPin,
+  Clock,
+  DollarSign,
   Languages,
   Heart,
   MessageCircle,
@@ -31,44 +31,48 @@ const TunisianChannel = () => {
       category: "Photography",
       username: "yasmine_sfax",
       content: "Just captured the most beautiful sunset over Sidi Bou Said! The blue and white architecture creates such magical contrasts. 📸🇹🇳",
+      img: "/sidibou.png",
       hashtags: ["#Photography", "#SidiBouSaid", "#Tunisia", "#Sunset"],
       likes: 45,
       comments: 8,
       saves: 12,
-      profilePhoto: null
+      profilePhoto: "/yassminesfax.png"
     },
     {
       id: 2,
       category: "Cuisine",
       username: "chef_hamza",
       content: "Traditional Tunisian couscous recipe passed down from my grandmother. The secret is in the seven vegetables and the perfect blend of spices! 🥘",
+      img: "/tunisian-couscous.png",
       hashtags: ["#TunisianCuisine", "#Couscous", "#TraditionalFood", "#Recipe"],
       likes: 78,
       comments: 15,
       saves: 34,
-      profilePhoto: null
+      profilePhoto: "/chefhamza.png"
     },
     {
       id: 3,
       category: "Language",
       username: "lina_tunis",
       content: "Learning Tunisian Arabic phrases today! 'Ahla w sahla' means welcome - such a warm greeting that reflects our hospitality! 🗣️",
+      img: "",
       hashtags: ["#TunisianArabic", "#Language", "#Culture", "#Learning"],
       likes: 23,
       comments: 6,
       saves: 18,
-      profilePhoto: null
+      profilePhoto: "/linatunis.png"
     },
     {
       id: 4,
       category: "Landmarks",
       username: "history_buff_tunis",
       content: "Exploring the ancient ruins of Carthage today. Standing where Hannibal once walked gives me chills! Our history is incredible. 🏛️",
+      img: "/landmarks.jpg",
       hashtags: ["#Carthage", "#History", "#Landmarks", "#AncientTunisia"],
       likes: 56,
       comments: 12,
       saves: 28,
-      profilePhoto: null
+      profilePhoto: "/public/historybuf.png"
     }
   ]);
 
@@ -82,7 +86,7 @@ const TunisianChannel = () => {
     spokenLanguages: ["Arabic", "French", "Berber"],
     population: "11.8 million",
     currency: "Tunisian Dinar (TND)",
-    currentTime: new Date().toLocaleTimeString('en-US', { 
+    currentTime: new Date().toLocaleTimeString('en-US', {
       timeZone: 'Africa/Tunis',
       hour: '2-digit',
       minute: '2-digit'
@@ -97,6 +101,7 @@ const TunisianChannel = () => {
       category: "General",
       username: "current_user",
       content: newPost,
+      img: "",
       hashtags: ["#Tunisia", "#MyStory"],
       likes: 0,
       comments: 0,
@@ -106,7 +111,7 @@ const TunisianChannel = () => {
 
     setPosts([story, ...posts]);
     setNewPost("");
-    
+
     toast({
       title: "Story Shared!",
       description: "Your story has been shared in the Tunisian Channel and will appear in the main feed.",
@@ -140,17 +145,17 @@ const TunisianChannel = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Channel Header */}
         <Card className="cultural-card mb-8">
-          <div 
-            className="h-48 bg-cover bg-center rounded-t-lg"
+          <div
+            className="h-80 bg-cover bg-center rounded-t-lg"
             style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1571071141177-b225b1ad8f7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')"
+              backgroundImage: "url('/medina.png')"
             }}
           />
           <CardContent className="p-6">
             <div className="flex items-start gap-4 mb-6">
               <Avatar className="h-20 w-20 border-4 border-white -mt-10">
-                <AvatarFallback className="text-4xl bg-red-500">
-                  🇹🇳
+                <AvatarFallback className="text-4xl bg-red-500 ">
+                  <img className="rounded-full object-cover" src="/tnFlag.jfif" alt="" />
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
@@ -161,7 +166,7 @@ const TunisianChannel = () => {
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{channelInfo.members.toLocaleString()} members</span>
                 </div>
-                
+
                 {/* Channel Info Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div className="flex items-center gap-2">
@@ -214,7 +219,7 @@ const TunisianChannel = () => {
               <div className="text-sm text-muted-foreground">
                 Stories shared here will also appear in the main feed
               </div>
-              <Button 
+              <Button
                 onClick={handleShareStory}
                 disabled={!newPost.trim()}
                 className="cta-button"
@@ -244,7 +249,7 @@ const TunisianChannel = () => {
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarFallback className="bg-primary text-white">
-                            {post.username.substring(0, 2).toUpperCase()}
+                            <img src={post.profilePhoto} alt="" />
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
@@ -262,7 +267,7 @@ const TunisianChannel = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-foreground mb-4">{post.content}</p>
-                      
+                      <img className="rounded-lg m-6 w-80" src={post.img} alt="" />
                       {/* Hashtags */}
                       <div className="flex flex-wrap gap-2 mb-4">
                         {post.hashtags.map((tag, index) => (
