@@ -244,7 +244,7 @@ const Pricing = () => {
               </CardContent>
             </Card>
 
-            {/* Master Plan */}
+            {/* Global Citizen Plan */}
             <Card className="cultural-card border-2 border-primary relative overflow-hidden">
               {/* Popular Badge */}
               <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 text-xs font-medium">
@@ -446,7 +446,7 @@ const Pricing = () => {
             </div>
             
             <p className="text-sm text-white/80 mt-6">
-              No credit card required for Visitor • Cancel Master anytime • Fair pricing worldwide
+              No credit card required for Visitor • Cancel Global Citizen Pass anytime • Fair pricing worldwide
             </p>
           </div>
         </div>
