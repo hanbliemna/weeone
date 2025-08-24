@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PostCard } from "@/components/PostCard";
 import {
   Search,
   Filter,
@@ -26,9 +27,11 @@ import Footer from "@/components/Footer";
 const MainFeed = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [posts] = useState([
+  const [posts, setPosts] = useState<any[]>([]);
+  const [staticPosts] = useState([
     {
-      id: 1,
+      id: "main_1",
+      user_id: "static",
       username: "maria_santos",
       country: "Brazil",
       culture: "Brazilian",
@@ -41,10 +44,14 @@ const MainFeed = () => {
       userType: "global_citizen",
       profilePhoto: "/maria-profile.png",
       hasPhoto: true,
-      photo: "/Festa Junina.jfif"
+      img: "/Festa Junina.jfif",
+      photo: "/Festa Junina.jfif",
+      created_at: new Date().toISOString(),
+      channel: "Brazil"
     },
     {
-      id: 2,
+      id: "main_2",
+      user_id: "static",
       username: "kenji_yamamoto",
       country: "Japan",
       culture: "Japanese",
@@ -56,10 +63,13 @@ const MainFeed = () => {
       saves: 31,
       userType: "visitor",
       profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      hasPhoto: false
+      hasPhoto: false,
+      created_at: new Date().toISOString(),
+      channel: "Japan"
     },
     {
-      id: 3,
+      id: "main_3",
+      user_id: "static",
       username: "amara_kone",
       country: "Mali",
       culture: "Malian",
@@ -72,9 +82,29 @@ const MainFeed = () => {
       userType: "global_citizen",
       profilePhoto: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face",
       hasPhoto: true,
-      photo: "/sundiata.jfif"
+      img: "/sundiata.jfif",
+      photo: "/sundiata.jfif",
+      created_at: new Date().toISOString(),
+      channel: "Mali"
     }
   ]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    const { data: dbPosts } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    const allPosts = [...(dbPosts || []), ...staticPosts].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    
+    setPosts(allPosts);
+  };
 
   const [channelSuggestions] = useState([
     { name: "🇧🇷 Brazilian Channel", members: "2.3k", category: "Country" },
@@ -188,75 +218,7 @@ const MainFeed = () => {
           <div className="xl:col-span-3 lg:col-span-2 lg:order-2 order-1">
             <div className="space-y-8">
               {posts.map((post) => (
-                <Card key={post.id} className="cultural-card shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-background to-muted/20 pb-4">
-                    <div className="flex items-start gap-4">
-                      <Avatar className="cursor-pointer h-12 w-12 ring-2 ring-primary/20" onClick={() => openUserProfile(post.username)}>
-                        <AvatarImage src={post.profilePhoto} />
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold">
-                          {post.username.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className="font-bold text-lg cursor-pointer hover:text-primary transition-colors truncate"
-                            onClick={() => openUserProfile(post.username)}
-                          >
-                            {post.username}
-                          </span>
-                          {getUserIcon(post.userType)}
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Globe className="h-4 w-4" />
-                          <span className="font-medium">{post.country}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="pt-6">
-                    <p className="text-foreground mb-6 text-lg leading-relaxed">{post.content}</p>
-
-                    {/* Post Photo */}
-                    {post.hasPhoto && (
-                      <div className="mb-6 -mx-6">
-                        <img
-                          src={post.photo}
-                          alt="Post content"
-                          className="w-full h-80 object-cover"
-                        />
-                      </div>
-                    )}
-
-                    {/* Hashtags */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {post.hashtags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-sm px-3 py-1 bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 transition-all duration-200 cursor-pointer">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-
-                    {/* Interaction Buttons */}
-                    <div className="flex items-center justify-between pt-6 border-t-2 border-gradient-to-r from-transparent via-border to-transparent">
-                      <div className="flex items-center gap-6">
-                        <Button variant="ghost" size="lg" className="flex items-center gap-3 text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-all duration-200 px-4 py-2">
-                          <Heart className="h-5 w-5" />
-                          <span className="font-semibold">{post.likes}</span>
-                        </Button>
-                        <Button variant="ghost" size="lg" className="flex items-center gap-3 text-muted-foreground hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 px-4 py-2">
-                          <MessageCircle className="h-5 w-5" />
-                          <span className="font-semibold">{post.comments}</span>
-                        </Button>
-                      </div>
-                      <Button variant="ghost" size="lg" className="flex items-center gap-3 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-200 px-4 py-2">
-                        <Bookmark className="h-5 w-5" />
-                        <span className="font-semibold">{post.saves}</span>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PostCard key={post.id} post={post} />
               ))}
             </div>
           </div>
