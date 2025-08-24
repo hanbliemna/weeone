@@ -102,14 +102,6 @@ const Index = () => {
           <div className="absolute inset-0 bg-background/20"></div>
         </div>
 
-        {/* Floating Cultural Elements */}
-        <div className="absolute inset-0 z-10">
-          <div className="absolute top-20 left-10 text-4xl animate-float">🌍</div>
-          <div className="absolute top-40 right-20 text-3xl animate-float" style={{animationDelay: '1s'}}>🎭</div>
-          <div className="absolute bottom-40 left-20 text-3xl animate-float" style={{animationDelay: '2s'}}>🎵</div>
-          <div className="absolute bottom-20 right-10 text-4xl animate-float" style={{animationDelay: '0.5s'}}>🏮</div>
-        </div>
-
         {/* Hero Content */}
         <div className={`relative z-20 max-w-4xl mx-auto px-4 text-center text-white transition-all duration-1000 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
@@ -134,14 +126,6 @@ const Index = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 rounded-full font-semibold"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Stories
-            </Button>
           </div>
 
           {/* Quick Stats */}
@@ -297,7 +281,7 @@ const Index = () => {
                   <p className="text-white/80 mb-4">Start your cultural journey</p>
                   <ul className="text-sm space-y-2 text-white/90">
                     <li>✓ Browse cultural stories</li>
-                    <li>✓ Basic quizzes</li>
+                    <li>✓ Welcome quiz</li>
                     <li>✓ Limited messaging</li>
                   </ul>
                 </CardContent>
@@ -305,8 +289,8 @@ const Index = () => {
               
               <Card className="border-white/30 bg-white/20 backdrop-blur">
                 <CardContent className="p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-4">The Master</h3>
-                  <p className="text-3xl font-bold mb-2">From $9.99</p>
+                  <h3 className="text-2xl font-bold mb-4">The Global Citizen</h3>
+                  <p className="text-3xl font-bold mb-2">From $3.99</p>
                   <p className="text-white/80 mb-4">Full cultural experience</p>
                   <ul className="text-sm space-y-2 text-white/90">
                     <li>✓ Everything in Visitor</li>

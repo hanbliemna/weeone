@@ -45,7 +45,7 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     
     try {
-      const redirectUrl = `https://id-preview--6ab35e0a-e7e9-4011-9033-eeb51296406c.lovable.app/register/profile-setup`;
+      const redirectUrl = `https://id-preview--6ab35e0a-e7e9-4011-9033-eeb51296406c.lovable.app/profile-setup`;
       
       const { error } = await supabase.auth.signUp({
         email: data.email,

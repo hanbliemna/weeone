@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Menu, Globe, Wifi, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getCountryFlag } from "@/utils/countryFlags";
+import ProfileDropdown from "@/components/ProfileDropdown";
 
 const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -25,6 +27,7 @@ const Header = () => {
 
   const isActive = (href: string) => location.pathname === href;
   const isMainFeed = location.pathname === '/feed';
+  const isProfileSetup = location.pathname === '/profile-setup';
 
   useEffect(() => {
     const getUser = async () => {
@@ -55,18 +58,11 @@ const Header = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
-          <div className="relative">
-            <Globe className="h-8 w-8 text-primary group-hover:text-primary-light transition-colors duration-300" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse-glow"></div>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold font-display text-foreground">WeeOne</h1>
-            <p className="text-xs text-muted-foreground -mt-1">Cultures United</p>
-          </div>
+        <img src="/WeeONE_LOGO.png" alt="logo" width="175" />
         </Link>
 
-        {/* Desktop Navigation - Hidden on main feed */}
-        {!isMainFeed && (
+        {/* Desktop Navigation - Hidden on main feed and profile setup */}
+        {!isMainFeed && !isProfileSetup && (
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
@@ -87,7 +83,10 @@ const Header = () => {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
-          {isMainFeed && user ? (
+          {isProfileSetup ? (
+            // Don't show any buttons on profile setup page
+            null
+          ) : isMainFeed && user ? (
             // Main Feed Navigation - Only show logo, profile, connected status, and language selector
             <div className="flex items-center space-x-4">
               {/* Language Selector */}
@@ -117,18 +116,8 @@ const Header = () => {
                 <span className="text-sm text-muted-foreground">Connected</span>
               </div>
               
-              {/* User Profile with Visitor's color border */}
-              <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8 border-2 border-accent">
-                  <AvatarImage src={profile?.profile_photo} />
-                  <AvatarFallback className="bg-accent text-white text-sm">
-                    {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium text-foreground">
-                  {profile?.username || 'Visitor'}
-                </span>
-              </div>
+              {/* User Profile Dropdown */}
+              <ProfileDropdown user={user} profile={profile} />
             </div>
           ) : (
             // Default Actions for other pages (no 24/7 Chat)
@@ -173,12 +162,20 @@ const Header = () => {
                   // Main Feed Mobile Profile
                   <>
                     <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                      <Avatar className="h-10 w-10 border-2 border-accent">
-                        <AvatarImage src={profile?.profile_photo} />
-                        <AvatarFallback className="bg-accent text-white">
-                          {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative">
+                        <Avatar className="h-10 w-10 border-2 border-accent">
+                          <AvatarImage src={profile?.profile_photo} />
+                          <AvatarFallback className="bg-accent text-white">
+                            {profile?.username?.substring(0, 2).toUpperCase() || user.email?.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {/* Country flag overlay for mobile */}
+                        {profile?.nationality && (
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background rounded-full flex items-center justify-center text-sm border border-border">
+                            {getCountryFlag(profile.nationality)}
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <p className="font-medium text-foreground">{profile?.username || 'Visitor'}</p>
                         <div className="flex items-center space-x-1">
