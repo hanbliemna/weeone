@@ -395,21 +395,17 @@ const Pricing = () => {
                 answer: "We use purchasing power parity to ensure fair pricing across different economies. Your location determines your regional pricing tier automatically."
               },
               {
-                question: "Can I switch from Visitor to Master anytime?",
+                question: "Can I switch from Visitor to Global Citizen anytime?",
                 answer: "Absolutely! You can upgrade to Master at any time and start enjoying premium features immediately. Your cultural progress is always saved."
               },
               {
-                question: "What happens if I cancel my Master subscription?",
+                question: "What happens if I cancel my Global Citizen subscription?",
                 answer: "You'll continue to have Master access until the end of your billing period, then automatically switch to Visitor with all your cultural progress preserved."
               },
               {
                 question: "Are in-app purchases necessary to enjoy WeeOne?",
                 answer: "Not at all! Both Visitor and Master plans provide complete cultural experiences. In-app purchases are purely optional enhancements."
               },
-              {
-                question: "Do you offer student discounts?",
-                answer: "Yes! Students with valid .edu email addresses receive an additional 50% discount on Master subscriptions. Cultural education should be accessible!"
-              }
             ].map((faq, index) => (
               <Card key={index} className="cultural-card">
                 <CardContent className="p-6">
@@ -444,7 +440,7 @@ const Pricing = () => {
                 variant="outline" 
                 className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 rounded-full font-semibold"
               >
-                Become a Master
+                Become a Global Citizen
                 <Crown className="ml-2 h-5 w-5" />
               </Button>
             </div>
