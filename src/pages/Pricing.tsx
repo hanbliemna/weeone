@@ -150,7 +150,7 @@ const Pricing = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Start free as a Visitor or unlock the full cultural experience as a Master. 
+            Start free as a Visitor or unlock the full cultural experience as a Global Citizen. 
             Regional pricing ensures everyone can join our global community.
           </p>
 
@@ -301,7 +301,7 @@ const Pricing = () => {
               <div className="grid grid-cols-3 bg-muted p-4">
                 <div className="font-bold text-foreground">Features</div>
                 <div className="text-center font-bold text-foreground">Visitor</div>
-                <div className="text-center font-bold text-primary">Master</div>
+                <div className="text-center font-bold text-primary">Global Citizen</div>
               </div>
               
               {comparisonFeatures.map((category, categoryIndex) => (
@@ -391,15 +391,15 @@ const Pricing = () => {
               },
               {
                 question: "Can I switch from Visitor to Global Citizen anytime?",
-                answer: "Absolutely! You can upgrade to Master at any time and start enjoying premium features immediately. Your cultural progress is always saved."
+                answer: "Absolutely! You can upgrade to Global Citizen at any time and start enjoying premium features immediately. Your cultural progress is always saved."
               },
               {
                 question: "What happens if I cancel my Global Citizen subscription?",
-                answer: "You'll continue to have Master access until the end of your billing period, then automatically switch to Visitor with all your cultural progress preserved."
+                answer: "You'll continue to have Global Citizen access until the end of your billing period, then automatically switch to Visitor with all your cultural progress preserved."
               },
               {
                 question: "Are in-app purchases necessary to enjoy WeeOne?",
-                answer: "Not at all! Both Visitor and Master plans provide complete cultural experiences. In-app purchases are purely optional enhancements."
+                answer: "Not at all! Both Visitor and Global Citizen plans provide complete cultural experiences. In-app purchases are purely optional enhancements."
               },
             ].map((faq, index) => (
               <Card key={index} className="cultural-card">
