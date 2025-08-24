@@ -184,9 +184,9 @@ const Story = () => {
                 </div>
                 
                 <div className="flex flex-wrap gap-3">
-                  <Badge variant="secondary">40+ Countries Visited</Badge>
-                  <Badge variant="secondary">Cultural Anthropology Graduate</Badge>
-                  <Badge variant="secondary">TEDx Speaker</Badge>
+                  <Badge variant="secondary">8+ Countries Visited</Badge>
+                  <Badge variant="secondary">Marketing & Business Development Graduate</Badge>
+                  <Badge variant="secondary">Global Volunteer</Badge>
                 </div>
               </div>
             </div>
