@@ -161,7 +161,7 @@ const Story = () => {
                   <h2 className="text-4xl font-bold font-display text-foreground mb-4">
                     Meet Our Founder
                   </h2>
-                  <h3 className="text-2xl font-semibold text-primary mb-6">Emna Hanbli</h3>
+                  <h3 className="text-2xl font-semibold text-primary mb-6">Emna</h3>
                 </div>
                 
                 <div className="space-y-4 text-muted-foreground">
