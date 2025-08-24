@@ -134,14 +134,6 @@ const Index = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 rounded-full font-semibold"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Stories
-            </Button>
           </div>
 
           {/* Quick Stats */}
@@ -297,7 +289,7 @@ const Index = () => {
                   <p className="text-white/80 mb-4">Start your cultural journey</p>
                   <ul className="text-sm space-y-2 text-white/90">
                     <li>✓ Browse cultural stories</li>
-                    <li>✓ Basic quizzes</li>
+                    <li>✓ Welcome quiz</li>
                     <li>✓ Limited messaging</li>
                   </ul>
                 </CardContent>
@@ -305,8 +297,8 @@ const Index = () => {
               
               <Card className="border-white/30 bg-white/20 backdrop-blur">
                 <CardContent className="p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-4">The Master</h3>
-                  <p className="text-3xl font-bold mb-2">From $9.99</p>
+                  <h3 className="text-2xl font-bold mb-4">The Global Citizen</h3>
+                  <p className="text-3xl font-bold mb-2">From $3.99</p>
                   <p className="text-white/80 mb-4">Full cultural experience</p>
                   <ul className="text-sm space-y-2 text-white/90">
                     <li>✓ Everything in Visitor</li>
