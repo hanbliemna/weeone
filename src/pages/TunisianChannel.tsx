@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PostCard } from "@/components/PostCard";
 import {
   ArrowLeft,
   Users,
@@ -20,14 +21,17 @@ import {
   Send
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const TunisianChannel = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [newPost, setNewPost] = useState("");
-  const [posts, setPosts] = useState([
+  const [posts, setPosts] = useState<any[]>([]);
+  const [staticPosts] = useState([
     {
-      id: 1,
+      id: "tunisia_1",
+      user_id: "static",
       category: "Photography",
       username: "yasmine_sfax",
       content: "Just captured the most beautiful sunset over Sidi Bou Said! The blue and white architecture creates such magical contrasts. 📸🇹🇳",
@@ -36,10 +40,13 @@ const TunisianChannel = () => {
       likes: 45,
       comments: 8,
       saves: 12,
-      profilePhoto: "/yassminesfax.png"
+      profilePhoto: "/yassminesfax.png",
+      created_at: new Date().toISOString(),
+      channel: "tunisia"
     },
     {
-      id: 2,
+      id: "tunisia_2",
+      user_id: "static",
       category: "Cuisine",
       username: "chef_hamza",
       content: "Traditional Tunisian couscous recipe passed down from my grandmother. The secret is in the seven vegetables and the perfect blend of spices! 🥘",
@@ -48,10 +55,13 @@ const TunisianChannel = () => {
       likes: 78,
       comments: 15,
       saves: 34,
-      profilePhoto: "/chefhamza.png"
+      profilePhoto: "/chefhamza.png",
+      created_at: new Date().toISOString(),
+      channel: "tunisia"
     },
     {
-      id: 3,
+      id: "tunisia_3",
+      user_id: "static",
       category: "Language",
       username: "lina_tunis",
       content: "Learning Tunisian Arabic phrases today! 'Ahla w sahla' means welcome - such a warm greeting that reflects our hospitality! 🗣️",
@@ -60,10 +70,13 @@ const TunisianChannel = () => {
       likes: 23,
       comments: 6,
       saves: 18,
-      profilePhoto: "/linatunis.png"
+      profilePhoto: "/linatunis.png",
+      created_at: new Date().toISOString(),
+      channel: "tunisia"
     },
     {
-      id: 4,
+      id: "tunisia_4",
+      user_id: "static",
       category: "Landmarks",
       username: "history_buff_tunis",
       content: "Exploring the ancient ruins of Carthage today. Standing where Hannibal once walked gives me chills! Our history is incredible. 🏛️",
@@ -72,9 +85,29 @@ const TunisianChannel = () => {
       likes: 56,
       comments: 12,
       saves: 28,
-      profilePhoto: "/public/historybuf.png"
+      profilePhoto: "/historybuf.png",
+      created_at: new Date().toISOString(),
+      channel: "tunisia"
     }
   ]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    const { data: dbPosts } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('channel', 'tunisia')
+      .order('created_at', { ascending: false });
+    
+    const allPosts = [...(dbPosts || []), ...staticPosts].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    
+    setPosts(allPosts);
+  };
 
   const channelInfo = {
     name: "Tunisian Channel",
@@ -93,29 +126,46 @@ const TunisianChannel = () => {
     })
   };
 
-  const handleShareStory = () => {
+  const handleShareStory = async () => {
     if (!newPost.trim()) return;
 
-    const story = {
-      id: posts.length + 1,
-      category: "General",
-      username: "current_user",
-      content: newPost,
-      img: "",
-      hashtags: ["#Tunisia", "#MyStory"],
-      likes: 0,
-      comments: 0,
-      saves: 0,
-      profilePhoto: null
-    };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to share your story.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    setPosts([story, ...posts]);
-    setNewPost("");
+    // Extract hashtags from content
+    const hashtagRegex = /#\w+/g;
+    const hashtags = newPost.match(hashtagRegex) || [];
 
-    toast({
-      title: "Story Shared!",
-      description: "Your story has been shared in the Tunisian Channel and will appear in the main feed.",
-    });
+    const { error } = await supabase
+      .from('posts')
+      .insert({
+        user_id: user.id,
+        content: newPost.trim(),
+        hashtags,
+        channel: 'tunisia'
+      });
+
+    if (!error) {
+      setNewPost("");
+      fetchPosts(); // Refresh posts
+      toast({
+        title: "Story Shared!",
+        description: "Your story has been shared in the Tunisian Channel and will appear in the main feed.",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to share your story. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getTopicPosts = (topic: string) => {
@@ -210,7 +260,7 @@ const TunisianChannel = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
-              placeholder="What's your Tunisian story? Share your experiences, memories, or thoughts about Tunisia..."
+              placeholder="What's your Tunisian story? Share your experiences, memories, or thoughts about Tunisia... Use #hashtags to categorize your post!"
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
               className="min-h-24"
@@ -244,58 +294,7 @@ const TunisianChannel = () => {
             <TabsContent key={topic} value={topic} className="space-y-6">
               <div className="space-y-6">
                 {getTopicPosts(topic).map((post) => (
-                  <Card key={post.id} className="cultural-card">
-                    <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-primary text-white">
-                            <img src={post.profilePhoto} alt="" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">{post.username}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {post.category}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>🇹🇳 Tunisia</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-foreground mb-4">{post.content}</p>
-                      <img className="rounded-lg m-6 w-80" src={post.img} alt="" />
-                      {/* Hashtags */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {post.hashtags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      {/* Interaction Buttons */}
-                      <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                        <div className="flex items-center gap-4">
-                          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-red-500">
-                            <Heart className="h-4 w-4" />
-                            {post.likes}
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-secondary">
-                            <MessageCircle className="h-4 w-4" />
-                            {post.comments}
-                          </Button>
-                        </div>
-                        <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
-                          <Bookmark className="h-4 w-4" />
-                          {post.saves}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <PostCard key={post.id} post={post} />
                 ))}
               </div>
             </TabsContent>
