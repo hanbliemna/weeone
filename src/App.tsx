@@ -14,6 +14,8 @@ import EmailVerification from "./pages/EmailVerification";
 import ProfileSetup from "./pages/ProfileSetup";
 import MainFeed from "./pages/MainFeed";
 import NotFound from "./pages/NotFound";
+import SignIn from "./pages/SignIn";
+import TunisianChannel from "./pages/TunisianChannel";
 
 const queryClient = new QueryClient();
 
@@ -32,8 +34,10 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/register/form" element={<RegisterForm />} />
           <Route path="/register/email-verification" element={<EmailVerification />} />
-          <Route path="/register/profile-setup" element={<ProfileSetup />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/signin" element={<SignIn />} />
           <Route path="/feed" element={<MainFeed />} />
+          <Route path="/tunisian-channel" element={<TunisianChannel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
