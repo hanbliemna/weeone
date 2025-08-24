@@ -56,26 +56,23 @@ const Pricing = () => {
 
   const visitorFeatures = [
     "Browse cultural stories and posts",
-    "Basic cultural quizzes",
+    "Free welcome quiz",
     "Limited messaging (5 per day)",
-    "Join public country channels",
+    "Join up to 3 country channels",
     "Basic profile customization",
     "Community guidelines access"
   ];
 
   const masterFeatures = [
-    "Everything in Visitor plan",
     "Unlimited messaging and connections",
     "Premium cultural content & stories",
     "Advanced cultural quizzes & games",
-    "Private country channels access",
-    "Video calls with cultural mentors",
+    "Unlimited country channels access",
     "Exclusive global events",
     "Cultural achievement badges",
+    "Free Digital Cultural Souvenirs",
     "Priority customer support",
-    "Ad-free experience",
-    "Cultural gift exchange program",
-    "Monthly cultural care packages*"
+    "Ad-free experience"
   ];
 
   const inAppPurchases = [
@@ -110,19 +107,17 @@ const Pricing = () => {
       category: "Cultural Content",
       features: [
         { name: "Browse Cultural Stories", visitor: true, master: true },
-        { name: "Basic Cultural Quizzes", visitor: true, master: true },
+        { name: "Welcome Cultural Quiz", visitor: true, master: true },
         { name: "Premium Cultural Content", visitor: false, master: true },
-        { name: "Advanced Quizzes & Games", visitor: false, master: true },
-        { name: "Cultural Mentorship", visitor: false, master: true }
+        { name: "Advanced Quizzes & Games", visitor: false, master: true }
       ]
     },
     {
       category: "Community Features",
       features: [
-        { name: "Public Country Channels", visitor: true, master: true },
+        { name: "Access to Country Channels", visitor: true, master: true },
         { name: "Limited Messaging (5/day)", visitor: true, master: false },
         { name: "Unlimited Messaging", visitor: false, master: true },
-        { name: "Private Channels Access", visitor: false, master: true },
         { name: "Video Calls", visitor: false, master: true }
       ]
     },
