@@ -113,12 +113,11 @@ const Footer = () => {
             <h4 className="font-semibold text-foreground mb-4">Explore</h4>
             <nav className="space-y-3">
               {[
-                { label: "Channels", href: "/feed" },
-                { label: "People", href: "/feed" },
-                { label: "Languages", href: "/feed" },
-                { label: "WeeOne Leaderboard", href: "/feed" },
                 { label: "Our Story", href: "/story" },
                 { label: "Community", href: "/community" },
+                { label: "Cultural Exchange", href: "/community" },
+                { label: "Success Stories", href: "/community" },
+                { label: "Global Events", href: "/community" },
               ].map((item) => (
                 <Link
                   key={item.href}
@@ -209,12 +208,9 @@ const Footer = () => {
                 Cookie Policy
               </Link>
             </div>
-            <div className="flex items-center space-x-2">
-              <Globe className="h-5 w-5 text-primary" />
-              <p className="text-sm text-muted-foreground">
-                ©2025 WeeOne. All rights reserved.
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              © 2024 WeeOne. All rights reserved. Cultures United.
+            </p>
           </div>
         </div>
       </div>

@@ -71,28 +71,11 @@ const ProfileSetup = () => {
         return;
       }
       
-      // Check if user already has a complete profile (already registered)
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (existingProfile?.username) {
-        toast({
-          title: "You are already registered with WeeOne",
-          description: "Redirecting you to sign in page.",
-          variant: "destructive",
-        });
-        navigate("/signin");
-        return;
-      }
-      
       setUser(user);
     };
 
     checkAuth();
-  }, [navigate, toast]);
+  }, [navigate]);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -352,7 +335,7 @@ const ProfileSetup = () => {
                     <SelectContent className="max-h-48">
                           {countries.map((country) => (
                             <SelectItem key={country.code} value={country.name}>
-                              {country.display}
+                              {country.name}
                             </SelectItem>
                           ))}
                     </SelectContent>
@@ -377,7 +360,7 @@ const ProfileSetup = () => {
                     <SelectContent className="max-h-48">
                       {countries.map((country) => (
                         <SelectItem key={country.code} value={country.name}>
-                          {country.display}
+                          {country.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -636,7 +619,7 @@ const ProfileSetup = () => {
                           disabled={isSubmitting}
                           className="flex items-center cta-button"
                         >
-                          {isSubmitting ? "Stepping Into WeeOne..." : "Step Into WeeOne"}
+                          {isSubmitting ? "Creating Profile..." : "Complete Setup"}
                           {!isSubmitting && <CheckCircle className="h-4 w-4 ml-2" />}
                         </Button>
                       )}

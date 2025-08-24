@@ -161,32 +161,32 @@ const Story = () => {
                   <h2 className="text-4xl font-bold font-display text-foreground mb-4">
                     Meet Our Founder
                   </h2>
-                  <h3 className="text-2xl font-semibold text-primary mb-6">Emna Hanbli</h3>
+                  <h3 className="text-2xl font-semibold text-primary mb-6">Alex Chen</h3>
                 </div>
                 
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    "Hi, I’m a 27-year-old girl from Tunisia who’s always been fascinated by
-                    cultures and the beauty of human connections." 
+                    Growing up in a multicultural family with roots in three different continents, 
+                    Alex experienced firsthand both the beauty and challenges of cultural diversity.
                   </p>
                   
                   <p>
-                    "Studying abroad opened my eyes to how much we can learn from one another,
-                    and it made me believe that diversity is one of the greatest treasures we share.
-                    I truly love meeting people, exchanging stories, and celebrating what makes each
-                    of us unique."
+                    After traveling to over 40 countries and witnessing countless moments where 
+                    cultural misunderstanding created unnecessary barriers, Alex envisioned a platform 
+                    that could bridge these gaps through authentic storytelling and gamified learning.
                   </p>
                   
                   <p>
-                    "That’s why I created WeeOne — a space to bring people together from all around
-                    the world, to connect, share, and embrace our differences as strengths."
+                    "WeeOne isn't just an app – it's a movement toward a more understanding world," 
+                    says Alex. "Every connection made on our platform is a step toward breaking down 
+                    the walls that divide us."
                   </p>
                 </div>
                 
                 <div className="flex flex-wrap gap-3">
-                  <Badge variant="secondary">8+ Countries Visited</Badge>
-                  <Badge variant="secondary">Marketing & Business Development Graduate</Badge>
-                  <Badge variant="secondary">Global Volunteer</Badge>
+                  <Badge variant="secondary">40+ Countries Visited</Badge>
+                  <Badge variant="secondary">Cultural Anthropology Graduate</Badge>
+                  <Badge variant="secondary">TEDx Speaker</Badge>
                 </div>
               </div>
             </div>
