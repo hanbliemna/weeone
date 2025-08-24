@@ -102,14 +102,6 @@ const Index = () => {
           <div className="absolute inset-0 bg-background/20"></div>
         </div>
 
-        {/* Floating Cultural Elements */}
-        <div className="absolute inset-0 z-10">
-          <div className="absolute top-20 left-10 text-4xl animate-float">🌍</div>
-          <div className="absolute top-40 right-20 text-3xl animate-float" style={{animationDelay: '1s'}}>🎭</div>
-          <div className="absolute bottom-40 left-20 text-3xl animate-float" style={{animationDelay: '2s'}}>🎵</div>
-          <div className="absolute bottom-20 right-10 text-4xl animate-float" style={{animationDelay: '0.5s'}}>🏮</div>
-        </div>
-
         {/* Hero Content */}
         <div className={`relative z-20 max-w-4xl mx-auto px-4 text-center text-white transition-all duration-1000 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
