@@ -166,20 +166,20 @@ const Story = () => {
                 
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    Growing up in a multicultural family with roots in three different continents, 
-                    Alex experienced firsthand both the beauty and challenges of cultural diversity.
+                    "Hi, I’m a 27-year-old girl from Tunisia who’s always been fascinated by
+                    cultures and the beauty of human connections." 
                   </p>
                   
                   <p>
-                    After traveling to over 40 countries and witnessing countless moments where 
-                    cultural misunderstanding created unnecessary barriers, Alex envisioned a platform 
-                    that could bridge these gaps through authentic storytelling and gamified learning.
+                    "Studying abroad opened my eyes to how much we can learn from one another,
+                    and it made me believe that diversity is one of the greatest treasures we share.
+                    I truly love meeting people, exchanging stories, and celebrating what makes each
+                    of us unique."
                   </p>
                   
                   <p>
-                    "WeeOne isn't just an app – it's a movement toward a more understanding world," 
-                    says Alex. "Every connection made on our platform is a step toward breaking down 
-                    the walls that divide us."
+                    "That’s why I created WeeOne — a space to bring people together from all around
+                    the world, to connect, share, and embrace our differences as strengths."
                   </p>
                 </div>
                 
