@@ -49,9 +49,9 @@ const Pricing = () => {
   ];
 
   const pricingData = {
-    high: { visitor: 0, master: isAnnual ? 99.99 : 12.99 },
-    middle: { visitor: 0, master: isAnnual ? 59.99 : 7.99 },
-    low: { visitor: 0, master: isAnnual ? 29.99 : 3.99 }
+    high: { visitor: 0, master: isAnnual ? 79.99 : 7.99 },
+    middle: { visitor: 0, master: isAnnual ? 59.99 : 5.99 },
+    low: { visitor: 0, master: isAnnual ? 39.99 : 3.99 }
   };
 
   const visitorFeatures = [
@@ -174,7 +174,7 @@ const Pricing = () => {
             </span>
             {isAnnual && (
               <Badge variant="secondary" className="bg-accent text-white">
-                Save 35%
+                Save up
               </Badge>
             )}
           </div>
@@ -262,7 +262,7 @@ const Pricing = () => {
                   </span>
                   <span className="text-muted-foreground">/{isAnnual ? 'year' : 'month'}</span>
                   {isAnnual && (
-                    <p className="text-sm text-accent mt-1">Save 35% with annual billing</p>
+                    <p className="text-sm text-accent mt-1">Get 2-month FREE Subscription</p>
                   )}
                   <p className="text-muted-foreground mt-2">Full cultural experience</p>
                 </div>
@@ -277,7 +277,7 @@ const Pricing = () => {
                   ))}
                 </div>
                 <Button className="w-full mt-6 cta-button">
-                  Become a Master
+                  Become a Global Citizen
                   <Crown className="ml-2 h-4 w-4" />
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
