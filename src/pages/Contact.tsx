@@ -76,7 +76,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Support",
-      value: "hello@weeone.com",
+      value: "weeone.contact@gmail.com",
       description: "Get help with your account or general inquiries",
       response: "Within 24 hours",
       color: "text-primary"
