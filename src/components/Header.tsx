@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ const Header = () => {
   const [profile, setProfile] = useState<any>(null);
   const [currentLanguage, setCurrentLanguage] = useState<string>("English");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const supportedLanguages = ["English", "French", "Spanish", "Arabic"];
 
@@ -122,7 +123,12 @@ const Header = () => {
           ) : (
             // Default Actions for other pages (no 24/7 Chat)
             <>
-              <Button variant="outline" size="sm" className="border-primary/20 hover:bg-primary/5">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-primary/20 hover:bg-primary/5"
+                onClick={() => navigate('/signin')}
+              >
                 Sign In
               </Button>
               <Button size="sm" className="cta-button" onClick={() => window.location.href = '/register/form'}>
@@ -208,7 +214,11 @@ const Header = () => {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" className="border-primary/20 hover:bg-primary/5">
+                    <Button 
+                      variant="outline" 
+                      className="border-primary/20 hover:bg-primary/5"
+                      onClick={() => navigate('/signin')}
+                    >
                       Sign In
                     </Button>
                     <Button className="cta-button" onClick={() => window.location.href = '/register/form'}>

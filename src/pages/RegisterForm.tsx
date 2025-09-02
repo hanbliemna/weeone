@@ -241,7 +241,7 @@ const RegisterForm = () => {
                   Already have an account?
                 </p>
                 <Link 
-                  to="/login" 
+                  to="/signin" 
                   className="text-primary hover:text-primary/80 font-medium"
                 >
                   Sign in instead

@@ -96,7 +96,7 @@ const Register = () => {
                 </p>
                 <Button
                   variant="outline"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/signin")}
                   className="w-full border-primary/20 text-primary hover:bg-primary/5"
                 >
                   Sign In Instead
