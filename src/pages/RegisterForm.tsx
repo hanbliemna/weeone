@@ -45,6 +45,29 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     
     try {
+      // Check if email already exists in profiles table
+      const { data: existingProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('user_email')
+        .eq('user_email', data.email)
+        .single();
+
+      if (existingProfile) {
+        toast({
+          title: "Email Already Exists",
+          description: "Your email already exists, try signing in!",
+          variant: "destructive",
+        });
+        
+        // Redirect to sign in after a short delay
+        setTimeout(() => {
+          navigate("/signin");
+        }, 2000);
+        
+        setIsSubmitting(false);
+        return;
+      }
+      
       const redirectUrl = `https://id-preview--6ab35e0a-e7e9-4011-9033-eeb51296406c.lovable.app/profile-setup`;
       
       const { error } = await supabase.auth.signUp({
