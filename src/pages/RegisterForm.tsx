@@ -45,7 +45,25 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Try to sign up and catch if user already exists
+      // First check if email exists in profiles table
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('user_email')
+        .eq('user_email', data.email)
+        .maybeSingle();
+
+      if (existingProfile) {
+        toast({
+          title: "Email Already Exists",
+          description: "Your email already exists, try signing in!",
+          variant: "destructive",
+        });
+        navigate("/register/existing-user");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Attempt signup
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -57,15 +75,13 @@ const RegisterForm = () => {
         }
       });
 
-      // If user already exists, Supabase returns a user object but with no session
-      if (signUpData?.user && !signUpData?.session && error?.message?.includes('already registered')) {
+      // Check if user already exists in auth.users (Supabase returns user but no session)
+      if (signUpData?.user && !signUpData?.session) {
         toast({
-          title: "Email Already Exists",
+          title: "Email Already Exists", 
           description: "Your email already exists, try signing in!",
           variant: "destructive",
         });
-        
-        // Redirect to existing user page
         navigate("/register/existing-user");
         setIsSubmitting(false);
         return;
