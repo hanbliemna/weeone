@@ -45,41 +45,31 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Check if email already exists in profiles table
-      const { data: existingProfile, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_email')
-        .eq('user_email', data.email)
-        .single();
+      // Try to sign up and catch if user already exists
+      const { data: signUpData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: `https://id-preview--6ab35e0a-e7e9-4011-9033-eeb51296406c.lovable.app/profile-setup`,
+          data: {
+            full_name: data.fullName,
+          }
+        }
+      });
 
-      if (existingProfile) {
+      // If user already exists, Supabase returns a user object but with no session
+      if (signUpData?.user && !signUpData?.session && error?.message?.includes('already registered')) {
         toast({
           title: "Email Already Exists",
           description: "Your email already exists, try signing in!",
           variant: "destructive",
         });
         
-        // Redirect to sign in after a short delay
-        setTimeout(() => {
-          navigate("/signin");
-        }, 2000);
-        
+        // Redirect to existing user page
+        navigate("/register/existing-user");
         setIsSubmitting(false);
         return;
       }
-      
-      const redirectUrl = `https://id-preview--6ab35e0a-e7e9-4011-9033-eeb51296406c.lovable.app/profile-setup`;
-      
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: data.fullName,
-          }
-        }
-      });
 
       if (error) {
         throw error;

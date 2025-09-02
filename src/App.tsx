@@ -11,6 +11,7 @@ import Contact from "./pages/Contact";
 import Register from "./pages/Register";
 import RegisterForm from "./pages/RegisterForm";
 import EmailVerification from "./pages/EmailVerification";
+import ExistingUserRedirect from "./pages/ExistingUserRedirect";
 import ProfileSetup from "./pages/ProfileSetup";
 import MainFeed from "./pages/MainFeed";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/register/form" element={<RegisterForm />} />
           <Route path="/register/email-verification" element={<EmailVerification />} />
+          <Route path="/register/existing-user" element={<ExistingUserRedirect />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/feed" element={<MainFeed />} />
