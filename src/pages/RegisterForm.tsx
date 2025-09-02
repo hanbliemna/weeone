@@ -45,25 +45,7 @@ const RegisterForm = () => {
     setIsSubmitting(true);
     
     try {
-      // First check if email exists in profiles table
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('user_email')
-        .eq('user_email', data.email)
-        .maybeSingle();
-
-      if (existingProfile) {
-        toast({
-          title: "Email Already Exists",
-          description: "Your email already exists, try signing in!",
-          variant: "destructive",
-        });
-        navigate("/register/existing-user");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Attempt signup
+      // Attempt signup to check if email exists in auth.users
       const { data: signUpData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
