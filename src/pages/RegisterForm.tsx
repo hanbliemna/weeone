@@ -59,22 +59,22 @@ const RegisterForm = () => {
 
       // Check if user already exists in auth.users (Supabase returns user but no session)
       if (signUpData?.user && !signUpData?.session) {
-        // Check if the user's email is verified
-        if (signUpData.user.email_confirmed_at) {
-          // Email is verified, redirect to existing user page
+        // Check if the user is waiting for verification
+        if (!signUpData.user.email_confirmed_at) {
+          // User is waiting for verification, redirect to email verification
+          toast({
+            title: "Please Verify Your Email",
+            description: "Check your email for a verification link.",
+          });
+          navigate("/email-verification");
+        } else {
+          // User is not waiting for verification (already verified), redirect to existing user
           toast({
             title: "Email Already Exists", 
             description: "Your email already exists, try signing in!",
             variant: "destructive",
           });
-          navigate("/register/existing-user");
-        } else {
-          // Email exists but not verified, redirect to email verification
-          toast({
-            title: "Please Verify Your Email",
-            description: "Check your email for a verification link.",
-          });
-          navigate("/register/email-verification");
+          navigate("/email-existing");
         }
         setIsSubmitting(false);
         return;
