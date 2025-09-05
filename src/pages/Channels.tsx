@@ -11,8 +11,9 @@ import Footer from "@/components/Footer";
 const Channels = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAllChannels, setShowAllChannels] = useState(false);
 
-  const channels = [
+  const allChannels = [
     { name: "American Channel", members: 15420, flag: "🇺🇸", description: "Connect with American culture and traditions" },
     { name: "Turkish Channel", members: 8930, flag: "🇹🇷", description: "Explore Turkish heritage and customs" },
     { name: "Palestinian Channel", members: 6740, flag: "🇵🇸", description: "Share Palestinian stories and experiences" },
@@ -33,7 +34,20 @@ const Channels = () => {
     { name: "Australian Channel", members: 5920, flag: "🇦🇺", description: "Discover Australian culture and lifestyle" },
     { name: "Thai Channel", members: 7410, flag: "🇹🇭", description: "Experience Thai culture and traditions" },
     { name: "Moroccan Channel", members: 6380, flag: "🇲🇦", description: "Explore Moroccan heritage and customs" },
+    // Additional channels shown when "See More" is clicked
+    { name: "Argentinian Channel", members: 5240, flag: "🇦🇷", description: "Experience Argentinian culture and tango" },
+    { name: "South African Channel", members: 7890, flag: "🇿🇦", description: "Discover South African heritage and diversity" },
+    { name: "Greek Channel", members: 4560, flag: "🇬🇷", description: "Explore ancient Greek culture and traditions" },
+    { name: "Swedish Channel", members: 3820, flag: "🇸🇪", description: "Connect with Swedish culture and lifestyle" },
+    { name: "Portuguese Channel", members: 6140, flag: "🇵🇹", description: "Discover Portuguese heritage and customs" },
+    { name: "Polish Channel", members: 5670, flag: "🇵🇱", description: "Experience Polish traditions and culture" },
+    { name: "Vietnamese Channel", members: 8920, flag: "🇻🇳", description: "Explore Vietnamese culture and cuisine" },
+    { name: "Iranian Channel", members: 4280, flag: "🇮🇷", description: "Connect with Persian culture and arts" },
+    { name: "Colombian Channel", members: 6750, flag: "🇨🇴", description: "Discover Colombian heritage and traditions" },
+    { name: "Filipino Channel", members: 9340, flag: "🇵🇭", description: "Experience Filipino culture and community" },
   ];
+
+  const channels = showAllChannels ? allChannels : allChannels.slice(0, 20);
 
   const filteredChannels = channels.filter(channel =>
     channel.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -93,11 +107,17 @@ const Channels = () => {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button variant="outline" size="lg">
-            See More Channels
-          </Button>
-        </div>
+        {!showAllChannels && (
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => setShowAllChannels(true)}
+            >
+              See More Channels
+            </Button>
+          </div>
+        )}
       </main>
 
       <Footer />
