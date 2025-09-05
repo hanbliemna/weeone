@@ -20,7 +20,6 @@ const MainFeedTabs = () => {
           <TabsTrigger value="feed">Feed</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
           <TabsTrigger value="people">People</TabsTrigger>
-          <TabsTrigger value="languages">Languages</TabsTrigger>
           <TabsTrigger value="leaderboard">WeeOne Leaderboard</TabsTrigger>
         </TabsList>
       </Tabs>

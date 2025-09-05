@@ -115,7 +115,6 @@ const Footer = () => {
               {[
                 { label: "Channels", href: "/feed" },
                 { label: "People", href: "/feed" },
-                { label: "Languages", href: "/feed" },
                 { label: "WeeOne Leaderboard", href: "/feed" },
                 { label: "Our Story", href: "/story" },
                 { label: "Community", href: "/community" },
