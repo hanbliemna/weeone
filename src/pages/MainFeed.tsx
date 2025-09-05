@@ -15,7 +15,9 @@ import {
   UserPlus,
   Crown,
   User,
-  Globe
+  Globe,
+  Eye,
+  ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -77,18 +79,29 @@ const MainFeed = () => {
   ]);
 
   const [channelSuggestions] = useState([
-    { name: "🇧🇷 Brazilian Channel", members: "2.3k", category: "Country" },
-    { name: "Chinese Channel", members: "1.8k", category: "Culture" },
-    { name: "Tunisian Channel", members: "3.1k", category: "Food" },
-    { name: "Congolese Channel", members: "924", category: "Art" },
-    { name: "Hungarian Channel", members: "1.5k", category: "Country" },
+    { name: "🇺🇸 American Channel", members: "4.2k", category: "Country", flag: "🇺🇸" },
+    { name: "🇹🇷 Turkish Channel", members: "3.1k", category: "Country", flag: "🇹🇷" },
+    { name: "🇵🇸 Palestinian Channel", members: "2.8k", category: "Country", flag: "🇵🇸" },
+    { name: "🇧🇷 Brazilian Channel", members: "2.3k", category: "Country", flag: "🇧🇷" },
+    { name: "🇯🇵 Japanese Channel", members: "3.5k", category: "Country", flag: "🇯🇵" },
+    { name: "🇮🇳 Indian Channel", members: "4.1k", category: "Country", flag: "🇮🇳" },
+    { name: "🇳🇬 Nigerian Channel", members: "2.9k", category: "Country", flag: "🇳🇬" },
+    { name: "🇹🇳 Tunisian Channel", members: "1.7k", category: "Country", flag: "🇹🇳" },
+    { name: "🇲🇽 Mexican Channel", members: "3.3k", category: "Country", flag: "🇲🇽" },
+    { name: "🇮🇩 Indonesian Channel", members: "2.6k", category: "Country", flag: "🇮🇩" },
   ]);
 
   const [peopleSuggestions] = useState([
-    { name: "Elena Rodriguez", country: "Spain", profilePhoto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-    { name: "Ahmed Hassan", country: "Egypt", profilePhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
-    { name: "Priya Sharma", country: "India", profilePhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
-    { name: "Marcus Johnson", country: "Ghana", profilePhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" },
+    { name: "Elena Rodriguez", country: "Spain", profilePhoto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face", userType: "global_citizen" },
+    { name: "Ahmed Hassan", country: "Egypt", profilePhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face", userType: "visitor" },
+    { name: "Priya Sharma", country: "India", profilePhoto: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face", userType: "global_citizen" },
+    { name: "Marcus Johnson", country: "Ghana", profilePhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face", userType: "visitor" },
+    { name: "Fatima Al-Zahra", country: "Morocco", profilePhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b192?w=150&h=150&fit=crop&crop=face", userType: "global_citizen" },
+    { name: "Hiroshi Tanaka", country: "Japan", profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face", userType: "visitor" },
+    { name: "Olumide Adebayo", country: "Nigeria", profilePhoto: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face", userType: "global_citizen" },
+    { name: "Sofia Petrov", country: "Bulgaria", profilePhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face", userType: "visitor" },
+    { name: "Carlos Mendoza", country: "Mexico", profilePhoto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face", userType: "global_citizen" },
+    { name: "Aisha Kone", country: "Mali", profilePhoto: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face", userType: "visitor" },
   ]);
 
   const getUserIcon = (userType: string) => {
@@ -157,19 +170,19 @@ const MainFeed = () => {
                   <p className="text-sm text-muted-foreground">Join conversations worldwide</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {channelSuggestions.map((channel, index) => (
-                    <div key={index} className="group p-4 bg-gradient-to-r from-muted/30 to-muted/60 rounded-xl hover:from-primary/10 hover:to-accent/10 transition-all duration-300">
+                  {channelSuggestions.slice(0, 8).map((channel, index) => (
+                    <div key={index} className="group p-3 bg-gradient-to-r from-muted/20 to-muted/40 rounded-lg hover:from-primary/10 hover:to-accent/10 transition-all duration-300">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-sm group-hover:text-primary transition-colors">{channel.name}</p>
+                        <p className="font-medium text-sm group-hover:text-primary transition-colors">{channel.name}</p>
                         <Badge variant="outline" className="text-xs">{channel.category}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-muted-foreground">{channel.members} members</p>
                         <Button
                           size="sm"
-                          className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white text-xs px-4 py-1"
+                          className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white text-xs px-3 py-1"
                           onClick={() => {
-                            if (channel.name === "Tunisian Channel") {
+                            if (channel.name.includes("Tunisian")) {
                               window.location.href = "/tunisian-channel";
                             }
                           }}
@@ -179,6 +192,15 @@ const MainFeed = () => {
                       </div>
                     </div>
                   ))}
+                  
+                  {/* See More Button */}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-primary hover:bg-primary/10 flex items-center justify-center gap-2"
+                  >
+                    <span>See More Channels</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -273,32 +295,53 @@ const MainFeed = () => {
                   <p className="text-sm text-muted-foreground">Meet amazing people</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {peopleSuggestions.map((person, index) => (
-                    <div key={index} className="group p-4 bg-gradient-to-br from-background to-muted/40 rounded-xl hover:from-primary/5 hover:to-accent/5 transition-all duration-300 border hover:border-primary/20">
+                  {peopleSuggestions.slice(0, 6).map((person, index) => (
+                    <div key={index} className="group p-3 bg-gradient-to-br from-background to-muted/30 rounded-lg hover:from-primary/5 hover:to-accent/5 transition-all duration-300 border hover:border-primary/20">
                       <div className="flex items-center gap-3 mb-3">
-                        <Avatar className="h-12 w-12 ring-2 ring-transparent group-hover:ring-primary/30 transition-all duration-300">
+                        <Avatar className="h-10 w-10 ring-2 ring-transparent group-hover:ring-primary/30 transition-all duration-300">
                           <AvatarImage src={person.profilePhoto} />
                           <AvatarFallback className="bg-gradient-to-br from-secondary to-primary text-white text-sm font-bold">
                             {person.name.substring(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm group-hover:text-primary transition-colors truncate">{person.name}</p>
+                          <div className="flex items-center gap-1 mb-1">
+                            <p className="font-medium text-sm group-hover:text-primary transition-colors truncate">{person.name}</p>
+                            {getUserIcon(person.userType)}
+                          </div>
                           <p className="text-xs text-muted-foreground flex items-center gap-1">
                             <Globe className="h-3 w-3" />
                             {person.country}
                           </p>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-xs py-2"
-                      >
-                        <UserPlus className="h-3 w-3 mr-2" />
-                        Connect
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-xs py-1.5"
+                        >
+                          <UserPlus className="h-3 w-3 mr-1" />
+                          Connect
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="px-3 hover:bg-accent/10 hover:border-accent"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
+                  
+                  {/* See More Button */}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-primary hover:bg-primary/10 flex items-center justify-center gap-2"
+                  >
+                    <span>Discover More People</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </CardContent>
               </Card>
             </div>
