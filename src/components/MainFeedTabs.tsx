@@ -5,7 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-const MainFeedTabs = () => {
+interface MainFeedTabsProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+const MainFeedTabs = ({ activeTab, onTabChange }: MainFeedTabsProps) => {
   const [notifications] = useState([
     { id: 1, message: "Maria Santos liked your comment", time: "2m ago" },
     { id: 2, message: "New member joined Brazilian Channel", time: "5m ago" },
@@ -15,7 +20,7 @@ const MainFeedTabs = () => {
   return (
     <div className="flex items-center justify-between mb-6">
       {/* Navigation Tabs */}
-      <Tabs defaultValue="feed" className="justify-end">
+      <Tabs value={activeTab} onValueChange={onTabChange} className="justify-end">
         <TabsList className="bg-muted/50">
           <TabsTrigger value="feed">Feed</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>

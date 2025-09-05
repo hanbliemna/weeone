@@ -23,11 +23,13 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import WiwiChatbot from "@/components/WiwiChatbot";
 import MainFeedTabs from "@/components/MainFeedTabs";
+import LeaderboardView from "@/components/LeaderboardView";
 import Footer from "@/components/Footer";
 
 const MainFeed = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("feed");
   const [posts] = useState([
     {
       id: 1,
@@ -134,30 +136,35 @@ const MainFeed = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Main Feed Tabs - Now full width at top */}
         <div className="mb-8">
-          <div className="flex justify-center"> {/* Changed to justify-end to align right */}
-            <MainFeedTabs />
+          <div className="flex justify-center">
+            <MainFeedTabs activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
         </div>
 
-        {/* Search Bar - Centered and prominent */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <Card className="cultural-card shadow-lg">
-            <CardContent className="p-6">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search cultures, countries, users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 h-12 text-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Conditional Content Based on Active Tab */}
+        {activeTab === "leaderboard" ? (
+          <LeaderboardView />
+        ) : (
+          <>
+            {/* Search Bar - Centered and prominent */}
+            <div className="max-w-2xl mx-auto mb-8">
+              <Card className="cultural-card shadow-lg">
+                <CardContent className="p-6">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search cultures, countries, users..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-12 h-12 text-lg"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Main Content Area */}
-        <div className="grid xl:grid-cols-5 lg:grid-cols-4 gap-8">
+            {/* Main Content Area */}
+            <div className="grid xl:grid-cols-5 lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Channel Suggestions */}
           <div className="xl:col-span-1 lg:col-span-1 lg:order-1 order-3">
             <div className="sticky top-24 space-y-6">
@@ -346,7 +353,9 @@ const MainFeed = () => {
               </Card>
             </div>
           </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* User Profile Modal - Same as before */}
