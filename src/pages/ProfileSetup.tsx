@@ -186,7 +186,6 @@ const ProfileSetup = () => {
       });
       
       setProfileCompleted(true);
-      setCurrentStep(5);
     } catch (error: any) {
       toast({
         title: "Profile Creation Failed",
@@ -498,9 +497,26 @@ const ProfileSetup = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-foreground mb-2">Choose Your Journey</h3>
-              <p className="text-muted-foreground">All new users start as Visitors</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                {profileCompleted ? "Profile Created Successfully!" : "Choose Your Journey"}
+              </h3>
+              <p className="text-muted-foreground">
+                {profileCompleted 
+                  ? "Review your information before proceeding" 
+                  : "All new users start as Visitors"}
+              </p>
             </div>
+
+            {profileCompleted && (
+              <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg border border-green-200 dark:border-green-800 mb-6">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="text-green-800 dark:text-green-200 font-medium">
+                    Your profile has been created successfully!
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-4">
               {/* Visitor Card - Always Selected */}
@@ -530,20 +546,22 @@ const ProfileSetup = () => {
                 <div className="mt-3 text-lg font-bold text-accent">Free</div>
               </div>
 
-              {/* Upgrade Button */}
-              <div className="text-center">
-                <Button
-                  type="button"
-                  onClick={() => setIsPricingModalOpen(true)}
-                  className="cta-button"
-                >
-                  <Crown className="h-4 w-4 mr-2" />
-                  Upgrade to Global Citizen
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  You can upgrade anytime to unlock premium features
-                </p>
-              </div>
+              {/* Upgrade Button - Only show if profile not completed */}
+              {!profileCompleted && (
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    onClick={() => setIsPricingModalOpen(true)}
+                    className="cta-button"
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade to Global Citizen
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    You can upgrade anytime to unlock premium features
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Profile Summary */}
@@ -670,7 +688,7 @@ const ProfileSetup = () => {
                           Next
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
-                      ) : currentStep === 4 ? (
+                      ) : currentStep === 4 && !profileCompleted ? (
                         <Button
                           type="submit"
                           disabled={isSubmitting}
@@ -678,6 +696,15 @@ const ProfileSetup = () => {
                         >
                           {isSubmitting ? "Creating Profile..." : "Create Profile"}
                           {!isSubmitting && <CheckCircle className="h-4 w-4 ml-2" />}
+                        </Button>
+                      ) : currentStep === 4 && profileCompleted ? (
+                        <Button
+                          type="button"
+                          onClick={() => setCurrentStep(5)}
+                          className="flex items-center cta-button"
+                        >
+                          Confirm Profile Information
+                          <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       ) : null}
                     </div>
