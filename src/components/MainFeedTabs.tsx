@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 interface MainFeedTabsProps {
   activeTab: string;
@@ -11,16 +12,27 @@ interface MainFeedTabsProps {
 }
 
 const MainFeedTabs = ({ activeTab, onTabChange }: MainFeedTabsProps) => {
+  const navigate = useNavigate();
   const [notifications] = useState([
     { id: 1, message: "Maria Santos liked your comment", time: "2m ago" },
     { id: 2, message: "New member joined Brazilian Channel", time: "5m ago" },
     { id: 3, message: "Kenji shared a new origami tutorial", time: "1h ago" },
   ]);
 
+  const handleTabChange = (value: string) => {
+    if (value === "channels") {
+      navigate("/channels");
+    } else if (value === "people") {
+      navigate("/people");
+    } else {
+      onTabChange(value);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between mb-6">
       {/* Navigation Tabs */}
-      <Tabs value={activeTab} onValueChange={onTabChange} className="justify-end">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="justify-end">
         <TabsList className="bg-muted/50">
           <TabsTrigger value="feed">Feed</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
