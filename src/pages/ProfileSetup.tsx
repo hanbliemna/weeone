@@ -52,6 +52,7 @@ const ProfileSetup = () => {
   const [profileImage, setProfileImage] = useState<string>("");
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [profileCompleted, setProfileCompleted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -109,7 +110,7 @@ const ProfileSetup = () => {
     },
   });
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +185,8 @@ const ProfileSetup = () => {
         description: "Welcome to WeeOne! Your cultural journey begins now.",
       });
       
-      navigate("/feed");
+      setProfileCompleted(true);
+      setCurrentStep(5);
     } catch (error: any) {
       toast({
         title: "Profile Creation Failed",
@@ -218,6 +220,8 @@ const ProfileSetup = () => {
       return values.languagesSpoken.length > 0 && values.culturalPreferences.length > 0 && values.topicsOfInterest.length > 0;
     } else if (currentStep === 4) {
       return true; // Review step, no additional validation needed
+    } else if (currentStep === 5) {
+      return true; // Confirmation step, no additional validation needed
     }
     
     return false;
@@ -572,6 +576,42 @@ const ProfileSetup = () => {
             </div>
           </div>
         );
+
+      case 5:
+        return (
+          <div className="space-y-6 text-center">
+            <div className="text-center mb-6">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold text-primary">Profile Complete!</h3>
+              <p className="text-muted-foreground">Your WeeOne profile has been successfully created.</p>
+            </div>
+            
+            <div className="bg-green-50 dark:bg-green-950/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+              <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">
+                Welcome to the WeeOne Community! 🎉
+              </h4>
+              <p className="text-green-700 dark:text-green-300 text-sm">
+                You're now ready to connect with people from diverse cultures around the world. 
+                Your cultural journey awaits!
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <Button
+                type="button"
+                onClick={() => navigate("/feed")}
+                className="w-full cta-button text-lg py-6"
+              >
+                <CheckCircle className="h-5 w-5 mr-2" />
+                Enter WeeOne Community
+              </Button>
+              
+              <p className="text-sm text-muted-foreground">
+                Click above to confirm and start exploring the community
+              </p>
+            </div>
+          </div>
+        );
     }
   };
 
@@ -620,7 +660,7 @@ const ProfileSetup = () => {
                     )}
                     
                     <div className="ml-auto">
-                      {currentStep < totalSteps ? (
+                      {currentStep < 4 ? (
                         <Button
                           type="button"
                           onClick={nextStep}
@@ -630,16 +670,16 @@ const ProfileSetup = () => {
                           Next
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
-                      ) : (
+                      ) : currentStep === 4 ? (
                         <Button
                           type="submit"
                           disabled={isSubmitting}
                           className="flex items-center cta-button"
                         >
-                          {isSubmitting ? "Stepping Into WeeOne..." : "Step Into WeeOne"}
+                          {isSubmitting ? "Creating Profile..." : "Create Profile"}
                           {!isSubmitting && <CheckCircle className="h-4 w-4 ml-2" />}
                         </Button>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </form>
