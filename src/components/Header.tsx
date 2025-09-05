@@ -131,7 +131,7 @@ const Header = () => {
               >
                 Sign In
               </Button>
-              <Button size="sm" className="cta-button" onClick={() => window.location.href = '/register/form'}>
+              <Button size="sm" className="cta-button" onClick={() => navigate('/register-form')}>
                 Join Now
               </Button>
             </>

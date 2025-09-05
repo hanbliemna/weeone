@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, ArrowRight } from "lucide-react";
@@ -6,6 +7,15 @@ import Header from "@/components/Header";
 
 const ExistingUserRedirect = () => {
   const navigate = useNavigate();
+
+  // Automatically redirect to sign-in page after a short delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/signin");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,7 +39,7 @@ const ExistingUserRedirect = () => {
                   Your email already exists, try signing in!
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  It looks like you already have an account with this email address.
+                  It looks like you already have an account with this email address. You'll be redirected to the sign-in page in a few seconds.
                 </p>
               </div>
 

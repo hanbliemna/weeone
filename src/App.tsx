@@ -33,9 +33,9 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/register/form" element={<RegisterForm />} />
-          <Route path="/register/email-verification" element={<EmailVerification />} />
-          <Route path="/register/existing-user" element={<ExistingUserRedirect />} />
+          <Route path="/register-form" element={<RegisterForm />} />
+          <Route path="/email-verification" element={<EmailVerification />} />
+          <Route path="/email-existing" element={<ExistingUserRedirect />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/feed" element={<MainFeed />} />

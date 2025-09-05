@@ -59,16 +59,16 @@ const RegisterForm = () => {
 
       // Check if user already exists in auth.users (Supabase returns user but no session)
       if (signUpData?.user && !signUpData?.session) {
-        // Check if the user is waiting for verification
+        // Email exists in Auth.users - check verification status
         if (!signUpData.user.email_confirmed_at) {
-          // User is waiting for verification, redirect to email verification
+          // Email exists but not verified - redirect to verification page
           toast({
             title: "Please Verify Your Email",
             description: "Check your email for a verification link.",
           });
           navigate("/email-verification");
         } else {
-          // User is not waiting for verification (already verified), redirect to existing user
+          // Email exists and is verified - redirect to existing user page
           toast({
             title: "Email Already Exists", 
             description: "Your email already exists, try signing in!",
@@ -90,7 +90,7 @@ const RegisterForm = () => {
       });
       
       // Navigate to email verification page
-      navigate("/register/email-verification");
+      navigate("/email-verification");
     } catch (error: any) {
       toast({
         title: "Registration Failed",
@@ -111,11 +111,11 @@ const RegisterForm = () => {
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate(-1)}
             className="mb-6 hover:bg-primary/5 text-primary"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Registration
+            Back
           </Button>
 
           <Card className="cultural-card border-primary/30 shadow-cultural">
