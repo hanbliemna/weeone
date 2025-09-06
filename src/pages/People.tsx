@@ -4,14 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Search, ArrowLeft, UserPlus, Eye } from "lucide-react";
+import { Search, ArrowLeft, UserPlus, Eye, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import MatchingModal from "@/components/MatchingModal";
 
 const People = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMatchingModalOpen, setIsMatchingModalOpen] = useState(false);
 
   const people = [
     { name: "Maria Santos", country: "Brazil", flag: "🇧🇷", avatar: "/maria-profile.png", interests: "Dance, Music", mutual: 5 },
@@ -47,18 +49,28 @@ const People = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/feed')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Feed
-          </Button>
+        <div className="mb-6 flex justify-between items-start">
+          <div>
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/feed')}
+              className="mb-4"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Feed
+            </Button>
+            
+            <h1 className="text-3xl font-bold text-foreground mb-2">Discover People</h1>
+            <p className="text-muted-foreground">Connect with people from diverse cultures and backgrounds</p>
+          </div>
           
-          <h1 className="text-3xl font-bold text-foreground mb-2">Discover People</h1>
-          <p className="text-muted-foreground">Connect with people from diverse cultures and backgrounds</p>
+          <Button 
+            onClick={() => setIsMatchingModalOpen(true)}
+            className="bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white shadow-lg"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            Find out who you match with
+          </Button>
         </div>
 
         <div className="relative mb-8">
@@ -118,6 +130,11 @@ const People = () => {
       </main>
 
       <Footer />
+      
+      <MatchingModal 
+        isOpen={isMatchingModalOpen} 
+        onClose={() => setIsMatchingModalOpen(false)} 
+      />
     </div>
   );
 };
