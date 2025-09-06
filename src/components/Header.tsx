@@ -8,6 +8,7 @@ import { Menu, Globe, Wifi, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/utils/countryFlags";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import NotificationsDropdown from "@/components/NotificationsDropdown";
 
 const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -116,6 +117,9 @@ const Header = () => {
                 <Wifi className="h-4 w-4 text-accent" />
                 <span className="text-sm text-muted-foreground">Connected</span>
               </div>
+              
+              {/* Notifications */}
+              <NotificationsDropdown />
               
               {/* User Profile Dropdown */}
               <ProfileDropdown user={user} profile={profile} />

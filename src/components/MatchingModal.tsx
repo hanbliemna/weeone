@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, RotateCcw } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface MatchingModalProps {
   isOpen: boolean;
@@ -25,9 +27,19 @@ interface MatchProfile {
 }
 
 const MatchingModal = ({ isOpen, onClose }: MatchingModalProps) => {
+  const { toast } = useToast();
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getCurrentUser();
+  }, []);
 
   const potentialMatches: MatchProfile[] = [
     {
@@ -94,9 +106,40 @@ const MatchingModal = ({ isOpen, onClose }: MatchingModalProps) => {
 
   const currentProfile = potentialMatches[currentProfileIndex];
 
-  const handleSwipe = (direction: 'left' | 'right') => {
+  const handleSwipe = async (direction: 'left' | 'right') => {
     setIsAnimating(true);
     setSwipeDirection(direction);
+    
+    // If swiping right (connecting), send friend request
+    if (direction === 'right' && currentUser) {
+      try {
+        // Create a mock user ID for the demo - in a real app, this would be the actual user ID
+        const mockUserId = `mock-user-${currentProfile.name.replace(/\s+/g, '-').toLowerCase()}`;
+        
+        const { error } = await supabase
+          .from('friend_requests')
+          .insert([{
+            sender_id: currentUser.id,
+            receiver_id: mockUserId
+          }]);
+
+        if (error && !error.message.includes('duplicate key')) {
+          throw error;
+        }
+
+        toast({
+          title: "Connection sent!",
+          description: `Friend request sent to ${currentProfile.name}`,
+        });
+      } catch (error) {
+        console.error('Error sending friend request:', error);
+        toast({
+          title: "Error",
+          description: "Failed to send connection request",
+          variant: "destructive"
+        });
+      }
+    }
     
     setTimeout(() => {
       if (currentProfileIndex < potentialMatches.length - 1) {

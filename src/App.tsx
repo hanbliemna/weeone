@@ -19,6 +19,7 @@ import SignIn from "./pages/SignIn";
 import TunisianChannel from "./pages/TunisianChannel";
 import Channels from "./pages/Channels";
 import People from "./pages/People";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/feed" element={<MainFeed />} />
           <Route path="/channels" element={<Channels />} />
           <Route path="/people" element={<People />} />
+          <Route path="/profile/:userId" element={<UserProfile />} />
           <Route path="/tunisian-channel" element={<TunisianChannel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

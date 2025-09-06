@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,11 +9,23 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MatchingModal from "@/components/MatchingModal";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const People = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMatchingModalOpen, setIsMatchingModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getCurrentUser();
+  }, []);
 
   const people = [
     { name: "Maria Santos", country: "Brazil", flag: "🇧🇷", avatar: "/maria-profile.png", interests: "Dance, Music", mutual: 5 },
@@ -43,6 +55,44 @@ const People = () => {
     person.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
     person.interests.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleConnect = async (person: any) => {
+    if (!currentUser) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to connect with people",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const mockUserId = `mock-user-${person.name.replace(/\s+/g, '-').toLowerCase()}`;
+      
+      const { error } = await supabase
+        .from('friend_requests')
+        .insert([{
+          sender_id: currentUser.id,
+          receiver_id: mockUserId
+        }]);
+
+      if (error && !error.message.includes('duplicate key')) {
+        throw error;
+      }
+
+      toast({
+        title: "Connection sent!",
+        description: `Friend request sent to ${person.name}`,
+      });
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send connection request",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
@@ -107,11 +157,20 @@ const People = () => {
                   </Badge>
                   
                   <div className="flex gap-2 w-full">
-                    <Button size="sm" className="flex-1 text-xs">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 text-xs"
+                      onClick={() => handleConnect(person)}
+                    >
                       <UserPlus className="mr-1 h-3 w-3" />
                       Connect
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 text-xs">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 text-xs"
+                      onClick={() => navigate(`/profile/mock-user-${person.name.replace(/\s+/g, '-').toLowerCase()}`)}
+                    >
                       <Eye className="mr-1 h-3 w-3" />
                       Explore
                     </Button>
