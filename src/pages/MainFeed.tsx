@@ -20,6 +20,8 @@ import {
   ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import WiwiChatbot from "@/components/WiwiChatbot";
 import MainFeedTabs from "@/components/MainFeedTabs";
@@ -27,9 +29,21 @@ import LeaderboardView from "@/components/LeaderboardView";
 import Footer from "@/components/Footer";
 
 const MainFeed = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("feed");
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getCurrentUser();
+  }, []);
+
   const [posts] = useState([
     {
       id: 1,
@@ -127,6 +141,55 @@ const MainFeed = () => {
       countriesUnlocked: ["Brazil", "Japan", "Mali"],
       userType: "global_citizen"
     });
+  };
+
+  const handleConnect = async () => {
+    if (!currentUser) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to connect with people",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!selectedUser) return;
+
+    try {
+      const mockUserId = `mock-user-${selectedUser.username.replace(/\s+/g, '-').toLowerCase()}`;
+      
+      const { error } = await supabase
+        .from('friend_requests')
+        .insert([{
+          sender_id: currentUser.id,
+          receiver_id: mockUserId
+        }]);
+
+      if (error && !error.message.includes('duplicate key')) {
+        throw error;
+      }
+
+      toast({
+        title: "Connection sent!",
+        description: `Friend request sent to ${selectedUser.fullName}`,
+      });
+      
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send connection request",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleExplore = () => {
+    if (!selectedUser) return;
+    const mockUserId = `mock-user-${selectedUser.username.replace(/\s+/g, '-').toLowerCase()}`;
+    navigate(`/profile/${mockUserId}`);
+    setSelectedUser(null);
   };
 
   return (
@@ -402,10 +465,23 @@ const MainFeed = () => {
                   <p className="text-sm font-bold text-primary">{selectedUser.totalPoints}</p>
                 </div>
 
-                <Button className="w-full bg-accent hover:bg-accent/90 text-white">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Send Friend Request
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button 
+                    className="flex-1 bg-accent hover:bg-accent/90 text-white"
+                    onClick={handleConnect}
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Connect
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={handleExplore}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Explore
+                  </Button>
+                </div>
               </div>
             </div>
           )}
