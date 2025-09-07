@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Users, ArrowLeft } from "lucide-react";
+import { Search, Users, ArrowLeft, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ChannelsMapModal from "@/components/ChannelsMapModal";
 
 const Channels = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAllChannels, setShowAllChannels] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const allChannels = [
     { name: "American Channel", members: 15420, flag: "🇺🇸", description: "Connect with American culture and traditions" },
@@ -58,18 +60,28 @@ const Channels = () => {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/feed')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Feed
-          </Button>
+        <div className="mb-6 flex justify-between items-start">
+          <div>
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/feed')}
+              className="mb-4"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Feed
+            </Button>
+            
+            <h1 className="text-3xl font-bold text-foreground mb-2">Global Channels</h1>
+            <p className="text-muted-foreground">Discover and join cultural communities from around the world</p>
+          </div>
           
-          <h1 className="text-3xl font-bold text-foreground mb-2">Global Channels</h1>
-          <p className="text-muted-foreground">Discover and join cultural communities from around the world</p>
+          <Button 
+            onClick={() => setIsMapModalOpen(true)}
+            className="bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white shadow-lg"
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Discover channels on the map
+          </Button>
         </div>
 
         <div className="relative mb-8">
@@ -121,6 +133,11 @@ const Channels = () => {
       </main>
 
       <Footer />
+      
+      <ChannelsMapModal 
+        isOpen={isMapModalOpen} 
+        onClose={() => setIsMapModalOpen(false)} 
+      />
     </div>
   );
 };
