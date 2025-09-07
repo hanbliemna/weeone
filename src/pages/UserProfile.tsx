@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserProfile {
   id: string;
@@ -37,6 +38,7 @@ interface UserPost {
 const UserProfile = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +63,27 @@ const UserProfile = () => {
 
   const fetchUserProfile = async () => {
     try {
+      // Check if it's a mock user (starts with 'mock-user-')
+      if (userId?.startsWith('mock-user-')) {
+        // Generate mock profile data
+        const mockProfile = {
+          id: userId,
+          user_id: userId,
+          username: userId.replace('mock-user-', '').replace(/-/g, ' '),
+          profile_photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+          nationality: "Brazil",
+          country_of_residence: "Brazil",
+          date_of_birth: "1990-01-01",
+          languages_spoken: ["Portuguese", "English"],
+          topics_of_interest: ["Music", "Dance", "Culture", "Travel"],
+          cultural_preferences: ["Traditional Music", "Folk Dance", "Cultural Festivals"],
+          created_at: "2024-01-01T00:00:00Z"
+        };
+        setProfile(mockProfile);
+        return;
+      }
+
+      // Real user profile fetch
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -76,6 +99,44 @@ const UserProfile = () => {
 
   const fetchUserPosts = async () => {
     try {
+      // Check if it's a mock user
+      if (userId?.startsWith('mock-user-')) {
+        // Generate mock posts
+        const mockPosts = [
+          {
+            id: "1",
+            content: "Just experienced the most amazing cultural festival! The traditional dances and music brought tears to my eyes. This is what real cultural connection feels like! 🎭✨",
+            created_at: "2024-03-15T10:30:00Z",
+            hashtags: ["#Culture", "#Festival", "#Tradition", "#Music"],
+            channel: "general",
+            likes_count: 45,
+            comments_count: 12
+          },
+          {
+            id: "2", 
+            content: "Sharing my favorite traditional recipe with the community today. Food is such a beautiful way to connect across cultures! 🍲❤️",
+            created_at: "2024-03-10T14:20:00Z",
+            hashtags: ["#Food", "#Recipe", "#Culture", "#Sharing"],
+            channel: "food",
+            likes_count: 78,
+            comments_count: 23
+          },
+          {
+            id: "3",
+            content: "Learning a new language opens so many doors to understanding different cultures. Currently practicing my third language! 📚🌍",
+            created_at: "2024-03-05T16:45:00Z",
+            hashtags: ["#Language", "#Learning", "#Culture", "#Education"],
+            channel: "education",
+            likes_count: 34,
+            comments_count: 8
+          }
+        ];
+        setPosts(mockPosts);
+        setLoading(false);
+        return;
+      }
+
+      // Real posts fetch
       const { data: postsData, error } = await supabase
         .from('posts')
         .select(`
@@ -104,6 +165,12 @@ const UserProfile = () => {
 
   const checkFriendRequestStatus = async () => {
     try {
+      // Skip friend request check for mock users
+      if (userId?.startsWith('mock-user-')) {
+        setFriendRequestStatus('none');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('friend_requests')
         .select('*')
@@ -128,6 +195,17 @@ const UserProfile = () => {
 
   const sendFriendRequest = async () => {
     try {
+      // Handle mock users
+      if (userId?.startsWith('mock-user-')) {
+        // Simulate friend request for demo purposes
+        setFriendRequestStatus('sent');
+        toast({
+          title: "Connection sent!",
+          description: `Friend request sent to ${profile?.username || 'user'}`,
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('friend_requests')
         .insert([{
@@ -137,8 +215,17 @@ const UserProfile = () => {
 
       if (error) throw error;
       setFriendRequestStatus('sent');
+      toast({
+        title: "Connection sent!",
+        description: `Friend request sent to ${profile?.username || 'user'}`,
+      });
     } catch (error) {
       console.error('Error sending friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send connection request",
+        variant: "destructive"
+      });
     }
   };
 
